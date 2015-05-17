@@ -9,7 +9,6 @@ from random import *
 
 import pygame
 
-
 class Builder(GameEntity):
     
     def __init__(self, world, image, rest):

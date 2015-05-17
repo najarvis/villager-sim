@@ -17,8 +17,6 @@ from Farmer import *
 from Clips import Clips
 
 from random import randint, seed
-#from VoronoiMapGenTaxi import point, mapGen
-from midpointDisplacement import terrain
 from VoronoiMapGen import point, mapGen
 
 grass_img = pygame.image.load("Images/Tiles/MinecraftDarkGrass.png")

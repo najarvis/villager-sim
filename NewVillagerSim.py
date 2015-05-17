@@ -25,8 +25,6 @@ from Clips import *
 
 from crossfade import CrossFade
 
-#from GlobRand import random_map
-
 from VoronoiMapGenTaxi import point, mapGen
 from random import randint
 
@@ -192,8 +190,6 @@ def run():
                     
             if event.type == VIDEORESIZE:
                 Owidth, Oheight = event.size
-                    
-            
                 
         #------------------Keys Below--------------------------------------------------
         pressed_keys = pygame.key.get_pressed()
