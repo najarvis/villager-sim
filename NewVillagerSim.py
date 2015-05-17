@@ -25,7 +25,7 @@ def run():
     pygame.display.set_caption("Villager Simulation")
 
     sizes = pygame.display.list_modes()
-    SCREEN_SIZE = (1000,600)
+    SCREEN_SIZE = (1000, 600)
 
     """Original screen size"""
     Owidth, Oheight = SCREEN_SIZE
@@ -216,9 +216,9 @@ def run():
                 draw = False
                 if held != True:
                     world.background_pos.x = (-1*(pos.x-world.clipper.minimap_rect.x)*world.clipper.a)+(
-                                                                                                       world.clipper.rect_view_w*world.clipper.a)/2
+                                                                                                           world.clipper.rect_view_w*world.clipper.a)/2
                     world.background_pos.y = (-1*(pos.y-world.clipper.minimap_rect.y)*world.clipper.b)+(
-                                                                                                       world.clipper.rect_view_h*world.clipper.b)/2
+                                                                                                           world.clipper.rect_view_h*world.clipper.b)/2
 
 
 
@@ -253,7 +253,7 @@ def run():
 
         if selected_building != None:
             if (pos.x > world.clipper.minimap_rect.x and pos.y > world.clipper.minimap_rect.y) or (
-                pos.x < world.clipper.side.w+32):
+                        pos.x < world.clipper.side.w+32):
                 pass
             else:
                 if not world.test_buildable(selected_building, 0, pos):
