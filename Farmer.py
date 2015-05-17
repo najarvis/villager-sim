@@ -6,7 +6,8 @@ from vector2 import *
 from Entities import *
 from Image_funcs import *
 
-from random import *
+import random
+import math
 
 import pygame
 
@@ -68,65 +69,64 @@ class Farmer_Planting(State):
     def __init__(self, Farmer):
 
         State.__init__(self, "Planting")
-        self.Farmer = Farmer
+        self.farmer = Farmer
 
     def check_conditions(self):
-        if self.Farmer.location.get_distance_to(self.Farmer.destination) < 2:
-            self.Farmer.destination = Vector2(self.Farmer.location)
-            self.Farmer.update()
+        if self.farmer.location.get_distance_to(self.farmer.destination) < 2:
+            self.farmer.destination = Vector2(self.farmer.location)
+            self.farmer.update()
 
     def do_actions(self):
-        if self.Farmer.location == self.Farmer.destination and self.Farmer.hit == 4 and self.Farmer.world.get_tile(
-                self.Farmer.location).plantable == 1:
+        if self.farmer.location == self.farmer.destination and self.farmer.hit == 4 and self.farmer.world.get_tile(
+                self.farmer.location).plantable == 1:
             self.plant_seed()
-        if self.Farmer.location == self.Farmer.destination and self.Farmer.hit != 4 and self.Farmer.world.get_tile(
-                self.Farmer.location).plantable != 1:
+        if self.farmer.location == self.farmer.destination and self.farmer.hit != 4 and self.farmer.world.get_tile(
+                self.farmer.location).plantable != 1:
             self.random_dest()
 
     def plant_seed(self):
         # Function for planting trees
 
         # Test to see if the tile the farmer is on is a tile that a tree can be planted on
-        if self.Farmer.world.get_tile(self.Farmer.location).plantable == 1:
-            self.Farmer.hit = 0
-            self.Farmer.image = self.Farmer.start
-            self.Farmer.image.set_colorkey((255, 0, 255))
+        if self.farmer.world.get_tile(self.farmer.location).plantable == 1:
+            self.farmer.hit = 0
+            self.farmer.image = self.farmer.start
+            self.farmer.image.set_colorkey((255, 0, 255))
 
-            old_tile = self.Farmer.world.get_tile(Vector2(self.Farmer.location))
+            old_tile = self.farmer.world.get_tile(Vector2(self.farmer.location))
 
             darkness = pygame.Surface((32, 32))
             darkness.set_alpha(old_tile.darkness)
 
-            new_tile = Baby_Tree(self.Farmer.world, Tile_image)
+            new_tile = Baby_Tree(self.farmer.world, Tile_image)
 
             new_tile.darkness = old_tile.darkness
 
-            new_tile.location = self.Farmer.world.get_tile_pos(self.Farmer.destination)*32
+            new_tile.location = self.farmer.world.get_tile_pos(self.farmer.destination)*32
             new_tile.rect.topleft = new_tile.location
             new_tile.color = old_tile.color
 
             # Give it an ID so it can be found
-            new_tile.id = self.Farmer.world.Baby_TreeID
-            self.Farmer.world.Baby_TreeID += 1
+            new_tile.id = self.farmer.world.Baby_TreeID
+            self.farmer.world.Baby_TreeID += 1
 
-            self.Farmer.world.TileArray[int(new_tile.location.y/32)][int(new_tile.location.x/32)] = new_tile
-            self.Farmer.world.background.blit(new_tile.img, new_tile.location)
-            self.Farmer.world.background.blit(darkness, new_tile.location)
+            self.farmer.world.TileArray[int(new_tile.location.y/32)][int(new_tile.location.x/32)] = new_tile
+            self.farmer.world.background.blit(new_tile.img, new_tile.location)
+            self.farmer.world.background.blit(darkness, new_tile.location)
 
             # Add the location to a dictionary so villagers can see how far they are from it.
-            self.Farmer.world.Baby_TreeLocations[str(self.Farmer.world.Baby_TreeID)] = new_tile.location
+            self.farmer.world.baby_tree_locations[str(self.farmer.world.Baby_TreeID)] = new_tile.location
 
         # Goes to a random destination no matter what
-        self.Farmer.hit = 0
+        self.farmer.hit = 0
         self.random_dest()
 
     def random_dest(self):
-        # Function for going to a random destination, currently limited to top 1/12 of the map
-        w, h = self.Farmer.worldSize
-        offset = self.Farmer.TileSize/2
-        TileSize = self.Farmer.TileSize
-        random_dest = (randint(0, 25)*TileSize+offset, randint(0, 25)*TileSize+offset)
-        self.Farmer.destination = Vector2(*random_dest)
+        # Function for going to a random destination
+        angle = math.radians(random.randint(0,360))
+        distance = random.randint(10, 25)
+        random_dest = (self.farmer.location.x + math.cos(angle) * distance, self.farmer.location.y + math.sin(angle) * distance)
+        self.farmer.destination = Vector2(*random_dest)
 
     def entry_actions(self):
         self.random_dest()

@@ -4,7 +4,8 @@ from Tile import *
 from Image_funcs import *
 
 from random import randint
-
+import random
+import math
 import pygame
 
 NoTreeImg = pygame.image.load("Images/Tiles/MinecraftGrass.png")
@@ -68,20 +69,20 @@ class Searching(State):
 
     def __init__(self, Lumberjack):
         State.__init__(self, "Searching")
-        self.Lumberjack = Lumberjack
+        self.lumberjack = Lumberjack
 
     def entry_actions(self):
-        pass
+        self.random_dest()
 
     def do_actions(self):
         pass
 
     def check_conditions(self):
-        if self.Lumberjack.location.get_distance_to(self.Lumberjack.destination) < 2:
-            self.tile_array = self.Lumberjack.world.get_tile_array((self.Lumberjack.location), self.Lumberjack.can_see)
-            test = self.Lumberjack.world.get_tile(self.Lumberjack.location)
+        if self.lumberjack.location.get_distance_to(self.lumberjack.destination) < 2:
+            self.tile_array = self.lumberjack.world.get_tile_array((self.lumberjack.location), self.lumberjack.can_see)
+            test = self.lumberjack.world.get_tile(self.lumberjack.location)
 
-            # pygame.draw.rect(self.Lumberjack.world.background, (255,255,255), (test.location[0]-(self.Lumberjack.can_see[0]<<5),test.location[1]-(self.Lumberjack.can_see[1]<<5),(self.Lumberjack.can_see[0]<<6)+32,(self.Lumberjack.can_see[1]<<6)+32), 3)
+            # pygame.draw.rect(self.lumberjack.world.background, (255,255,255), (test.location[0]-(self.lumberjack.can_see[0]<<5),test.location[1]-(self.lumberjack.can_see[1]<<5),(self.lumberjack.can_see[0]<<6)+32,(self.lumberjack.can_see[1]<<6)+32), 3)
 
             count = 0
             for i in self.tile_array:
@@ -90,44 +91,44 @@ class Searching(State):
                     if Tile != None:
 
                         if Tile.name == "TreePlantedTile_W":
-                            self.Lumberjack.Tree_tile = Tile
-                            self.Lumberjack.tree_id = Tile.id
+                            self.lumberjack.Tree_tile = Tile
+                            self.lumberjack.tree_id = Tile.id
                             if count == 1:
-                                self.Lumberjack.destination = (
-                                self.Lumberjack.location[0]-32, self.Lumberjack.location[1]-32)
+                                self.lumberjack.destination = (
+                                self.lumberjack.location[0]-32, self.lumberjack.location[1]-32)
 
                             elif count == 2:
-                                self.Lumberjack.destination = (
-                                self.Lumberjack.location[0], self.Lumberjack.location[1]-32)
+                                self.lumberjack.destination = (
+                                self.lumberjack.location[0], self.lumberjack.location[1]-32)
 
                             elif count == 3:
-                                self.Lumberjack.destination = (
-                                self.Lumberjack.location[0]+32, self.Lumberjack.location[1]-32)
+                                self.lumberjack.destination = (
+                                self.lumberjack.location[0]+32, self.lumberjack.location[1]-32)
 
                             elif count == 4:
-                                self.Lumberjack.destination = (
-                                self.Lumberjack.location[0]-32, self.Lumberjack.location[1])
+                                self.lumberjack.destination = (
+                                self.lumberjack.location[0]-32, self.lumberjack.location[1])
 
                             elif count == 5:
-                                self.Lumberjack.destination = (self.Lumberjack.location[0], self.Lumberjack.location[1])
+                                self.lumberjack.destination = (self.lumberjack.location[0], self.lumberjack.location[1])
 
                             elif count == 6:
-                                self.Lumberjack.destination = (
-                                self.Lumberjack.location[0]+32, self.Lumberjack.location[1])
+                                self.lumberjack.destination = (
+                                self.lumberjack.location[0]+32, self.lumberjack.location[1])
 
                             elif count == 7:
-                                self.Lumberjack.destination = (
-                                self.Lumberjack.location[0]-32, self.Lumberjack.location[1]+32)
+                                self.lumberjack.destination = (
+                                self.lumberjack.location[0]-32, self.lumberjack.location[1]+32)
 
                             elif count == 8:
-                                self.Lumberjack.destination = (
-                                self.Lumberjack.location[0], self.Lumberjack.location[1]+32)
+                                self.lumberjack.destination = (
+                                self.lumberjack.location[0], self.lumberjack.location[1]+32)
 
                             elif count == 9:
-                                self.Lumberjack.destination = (
-                                self.Lumberjack.location[0]+32, self.Lumberjack.location[1]+32)
+                                self.lumberjack.destination = (
+                                self.lumberjack.location[0]+32, self.lumberjack.location[1]+32)
 
-                            self.Lumberjack.main_des = self.Lumberjack.destination
+                            self.lumberjack.main_des = self.lumberjack.destination
                             return "Chopping"
 
             self.random_dest()
@@ -136,18 +137,17 @@ class Searching(State):
         pass
 
     def random_dest(self):
-        # Function for going to a random destination, currently limited to top 1/12 of the map
-        w, h = self.Lumberjack.worldSize
-        offset = self.Lumberjack.TileSize/2
-        TileSize = self.Lumberjack.TileSize
-        random_dest = (randint(0, 25)*TileSize+offset, randint(0, 25)*TileSize+offset)
-        self.Lumberjack.destination = Vector2(*random_dest)
+        # Function for going to a random destination
+        angle = math.radians(random.randint(0,360))
+        distance = random.randint(10, 25)
+        random_dest = (self.lumberjack.location.x + math.cos(angle) * distance, self.lumberjack.location.y + math.sin(angle) * distance)
+        self.lumberjack.destination = Vector2(*random_dest)
 
 
 class Chopping(State):
     def __init__(self, Lumberjack):
         State.__init__(self, "Chopping")
-        self.Lumberjack = Lumberjack
+        self.lumberjack = Lumberjack
 
     def entry_actions(self):
         pass
@@ -156,44 +156,44 @@ class Chopping(State):
         pass
 
     def check_conditions(self):
-        check = self.Lumberjack.world.get_tile(Vector2(self.Lumberjack.location))
-        if self.Lumberjack.location.get_distance_to(self.Lumberjack.main_des) < 2:
-            self.Lumberjack.destination = Vector2(self.Lumberjack.location)
+        check = self.lumberjack.world.get_tile(Vector2(self.lumberjack.location))
+        if self.lumberjack.location.get_distance_to(self.lumberjack.main_des) < 2:
+            self.lumberjack.destination = Vector2(self.lumberjack.location)
 
             if check.name != "TreePlantedTile_W":
-                self.Lumberjack.hit = 0
-                self.Lumberjack.num = 0
-                self.Lumberjack.image = self.Lumberjack.start
-                self.Lumberjack.ani_speed = self.Lumberjack.ani_speed_init
+                self.lumberjack.hit = 0
+                self.lumberjack.num = 0
+                self.lumberjack.image = self.lumberjack.start
+                self.lumberjack.ani_speed = self.lumberjack.ani_speed_init
                 return "Searching"
 
-            self.Lumberjack.update()
+            self.lumberjack.update()
 
-            if self.Lumberjack.hit == 4:
-                self.Lumberjack.destination = Vector2(self.Lumberjack.location)
-                self.Lumberjack.image = self.Lumberjack.start
-                self.Lumberjack.image.set_colorkey((255, 0, 255))
+            if self.lumberjack.hit == 4:
+                self.lumberjack.destination = Vector2(self.lumberjack.location)
+                self.lumberjack.image = self.lumberjack.start
+                self.lumberjack.image.set_colorkey((255, 0, 255))
 
-                old_tile = self.Lumberjack.world.get_tile(Vector2(self.Lumberjack.location))
+                old_tile = self.lumberjack.world.get_tile(Vector2(self.lumberjack.location))
 
                 darkness = pygame.Surface((32, 32))
                 darkness.set_alpha(old_tile.darkness)
 
-                new_tile = TreePlantedTile(self.Lumberjack.world, NoTreeImg)
+                new_tile = TreePlantedTile(self.lumberjack.world, NoTreeImg)
 
                 new_tile.darkness = old_tile.darkness
 
-                new_tile.location = self.Lumberjack.world.get_tile_pos(self.Lumberjack.destination)*32
+                new_tile.location = self.lumberjack.world.get_tile_pos(self.lumberjack.destination)*32
                 new_tile.rect.topleft = new_tile.location
                 new_tile.color = old_tile.color
 
-                self.Lumberjack.world.TileArray[int(new_tile.location.y/32)][int(new_tile.location.x/32)] = new_tile
-                self.Lumberjack.world.background.blit(new_tile.img, new_tile.location)
-                self.Lumberjack.world.background.blit(darkness, new_tile.location)
+                self.lumberjack.world.TileArray[int(new_tile.location.y/32)][int(new_tile.location.x/32)] = new_tile
+                self.lumberjack.world.background.blit(new_tile.img, new_tile.location)
+                self.lumberjack.world.background.blit(darkness, new_tile.location)
 
-                self.Lumberjack.hit = 0
+                self.lumberjack.hit = 0
 
-                # del self.Lumberjack.world.TreeLocations[str(self.Lumberjack.tree_id)]
+                # del self.lumberjack.world.TreeLocations[str(self.lumberjack.tree_id)]
                 return "Delivering"
 
     def exit_actions(self):
@@ -207,30 +207,30 @@ class Delivering(State):
 
     def __init__(self, Lumberjack):
         State.__init__(self, "Delivering")
-        self.Lumberjack = Lumberjack
+        self.lumberjack = Lumberjack
 
     def entry_actions(self):
 
-        des = self.Lumberjack.world.get_close_entity("LumberYard", self.Lumberjack.location, 100)
+        des = self.lumberjack.world.get_close_entity("LumberYard", self.lumberjack.location, 100)
         if des == None:
-            des = self.Lumberjack.world.get_close_entity("LumberYard", self.Lumberjack.location, 300)
+            des = self.lumberjack.world.get_close_entity("LumberYard", self.lumberjack.location, 300)
             if des == None:
-                des = self.Lumberjack.LastLumberYard
+                des = self.lumberjack.LastLumberYard
 
-        self.Lumberjack.LastLumberYard = des
+        self.lumberjack.LastLumberYard = des
 
-        self.Lumberjack.destination = des.location.copy()
+        self.lumberjack.destination = des.location.copy()
 
     def do_actions(self):
         pass
 
     def check_conditions(self):
 
-        # if self.Lumberjack.world.wood >= self.Lumberjack.world.MAXwood:
+        # if self.lumberjack.world.wood >= self.lumberjack.world.MAXwood:
         #    return "IDLE"
 
-        if self.Lumberjack.location.get_distance_to(self.Lumberjack.destination) < 2.0:
-            self.Lumberjack.world.wood += 5
+        if self.lumberjack.location.get_distance_to(self.lumberjack.destination) < 2.0:
+            self.lumberjack.world.wood += 5
             return "Searching"
 
     def exit_actions(self):
@@ -240,7 +240,7 @@ class Delivering(State):
 class IDLE(State):
     def __init__(self, Lumberjack):
         State.__init__(self, "Delivering")
-        self.Lumberjack = Lumberjack
+        self.lumberjack = Lumberjack
 
     def entry_actions(self):
         pass
