@@ -3,7 +3,6 @@ from World import *
 from GameEntity import *
 from vector2 import *
 from Entities import *
-from Tile import *
 from Image_funcs import *
 
 from random import *

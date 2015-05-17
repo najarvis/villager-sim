@@ -4,9 +4,9 @@ from pygame.locals import *
 
 from math import cos, sin, pi
 
-from vector2 import *
+from vector2 import Vector2
 
-from Tile import *
+import Tile
 
 from Building import *
 from Builder import *
@@ -152,76 +152,65 @@ class World(object):        #Class that stores basically EVERYTHING
                 color = f_color                
                 to_rotate = 1
                 
-                color2 = (255,0,220)
-                
-#                 if color < 95:
-#                     colorb = 0
-#                     tile = DeepWaterTile(self, self.deepwater_img)
-
-                    
                 if color < 110:
                     colorb = 0
-                    tile = WaterTile(self, self.water_img)
+                    tile = Tile.WaterTile(self, self.water_img)
                     
                     last_image = self.sand_img
                     last_color = 0
-                    to_rotate=0
-                    
+                    to_rotate=0   
                     
                 elif color >= 110 and color <120:
                     colorb = 110
-                    tile = BeachTile(self, self.sand_img)
+                    tile = Tile.BeachTile(self, self.sand_img)
                     last_image = self.sand_img
                     #to_rotate = 0
                     last_color = 110
                     
                 elif color >=120 and color < 140:
                     colorb = 120
-                    tile = GrassTile(self, self.grass_img)
+                    tile = Tile.GrassTile(self, self.grass_img)
                     last_image = self.sand_img
                     last_color = 120
                     
                 elif color >= 140 and color < 160:
                     colorb = 140
-                    tile = TreePlantedTile(self, self.tree_img)
+                    tile = Tile.TreePlantedTile(self, self.tree_img)
                     last_image = self.grass_img
                     last_color = 140
                     
                 elif color >= 160 and color < 170:
                     colorb = 160
-                    if color2[2] == 220:
                         
-                        tile = TreePlantedTile_w(self, self.WithTree_img)
-                        tile.location = Vector2(i<<5, a<<5)
-                        tile.rect.topleft = tile.location
-                        tile.id = self.TreeID
+                    tile = Tile.TreePlantedTile_w(self, self.WithTree_img)
+                    tile.location = Vector2(i<<5, a<<5)
+                    tile.rect.topleft = tile.location
+                    tile.id = self.TreeID
                             
-                        self.TreeLocations[str(self.TreeID)] = tile.location
-                        self.TreeID += 1
+                    self.TreeLocations[str(self.TreeID)] = tile.location
+                    self.TreeID += 1
                         
-                        to_rotate = 0
-                    else:
-                        tile = TreePlantedTile(self, self.tree_img)
+                    to_rotate = 0
                         
                     last_image = self.tree_img
                     last_color = 160
                     
                 elif color >= 170 and color < 190:
                     colorb = 170
-                    tile = TreePlantedTile(self, self.tree_img)
+                    tile = Tile.TreePlantedTile(self, self.tree_img)
                     last_image = self.WithTree_img
                     last_color = 170
                     
                 elif color >= 190 and color < 220:
                     colorb = 190
-                    tile = SmoothStoneTile(self, self.SStone_img)
+                    tile = Tile.SmoothStoneTile(self, self.SStone_img)
                     last_image = self.tree_img
                     to_rotate = 0
                     last_color = 190
                     
                 else:
                     colorb = 220
-                    tile = SnowTile(self, self.snow_img)
+                    tile = Tile.SnowTile(self, self.snow_img)
                     last_image = self.SStone_img
                     last_color = 220
                 
@@ -282,7 +271,6 @@ class World(object):        #Class that stores basically EVERYTHING
         VILLAGER_COUNT = 5
         BUILDER_COUNT = 1
         
-        
         #adds all the people and make sure they don't go all ape shit
         lumber1 = LumberYard(self, self.lumberyard_img)
         lumber1.location = Vector2(self.w/2, self.h/2)
@@ -290,30 +278,26 @@ class World(object):        #Class that stores basically EVERYTHING
         self.add_entity(lumber1)
     
         for Villager_no in xrange(VILLAGER_COUNT):    #Adds all Wood Cutters
-    
             villager = Lumberjack(self, self.lumberjack_img)
             villager.location = lumber1.location.copy()
             villager.LastLumberYard = lumber1
             villager.brain.set_state("Searching")
             self.add_entity(villager)
-            self.population+=1
-            
-        
+            self.population += 1
             
         for Building_no in xrange(BUILDER_COUNT):
             builder = Builder(self, self.builder_img, lumber1)
             builder.location = lumber1.location.copy()
             builder.brain.set_state("Idle")
             self.add_entity(builder)
-            self.population+=1
-        
+            self.population += 1
     
         for FARMER in xrange(FARMER_COUNT):     #Adds all the farmers
             farmer = Farmer(self, self.farmer_img)
-            farmer.location = Vector2(20,20)
+            farmer.location = lumber1.location.copy()
             farmer.brain.set_state("Planting")
             self.add_entity(farmer)
-            self.population+=1
+            self.population += 1
                 
     def add_building(self, building, pos):
         

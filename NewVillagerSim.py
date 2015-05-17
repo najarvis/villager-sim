@@ -1,30 +1,12 @@
 import pygame
-from pygame.locals import *
 pygame.init()
 
 from random import randint
-
-from vector2 import *
-
-from StateMachine import *
-from World import *
-
-from GameEntity import *
-from Entities import *
-from Villager import *
-from Farmer import *
-from Building import *
-from Tile import *
-
+from vector2 import Vector2
+from World import World
 from datetime import datetime
-
-from Lumberjack import *
-from Builder import *
-
-from Clips import *
-
+from Clips import Clips
 from crossfade import CrossFade
-
 from random import randint
 
 TILE_SIZE = 32 
@@ -48,10 +30,8 @@ def run():
     
     side_size = Owidth/5.0
 
-    mapGenerator = mapGen()
-
     if FULL_ON:
-        screen = pygame.display.set_mode(SCREEN_SIZE, FULLSCREEN|HWSURFACE, 32)
+        screen = pygame.display.set_mode(SCREEN_SIZE, pygame.FULLSCREEN|pygame.HWSURFACE, 32)
     else:
         screen = pygame.display.set_mode(SCREEN_SIZE, 0, 32)
     
@@ -80,6 +60,7 @@ def run():
     #pygame.image.save(world.minimap_img, "Images/UBER-COOL-small.png")
 
 
+    #These are all loaded here so that 
     Villager_image = pygame.image.load("Images/Entities/Villager.png").convert()
     Farmer_image = pygame.image.load("Images/Entities/Farmer.png").convert()
     Lumberjack_image = pygame.image.load("Images/Entities/Lumberjack.png").convert()
@@ -97,12 +78,7 @@ def run():
     bad_lumberyard_img = pygame.image.load("Images/Buildings/Red_LumberYard.png").convert()
     bad_lumberyard_img.set_colorkey((255,0,255))
     
-    #pygame.image.save(me_double_size(pygame.image.load("Images/Buildings/LumberYard_Icon.png").convert()), "LARGERLumb.png")
-    #pygame.image.save(me_double_size(pygame.image.load("Images/Buildings/Manor_Icon.png").convert()), "LARGERMan.png")
-    
     world.clipper = Clips(world, (Owidth, Oheight))
-    #pygame.image.save(world.background, "Images/ShadowsRandomWorldGen.png")
-    #pygame.image.save(world.minimap_img, "Images/SmallAndVariety2.png")
     
     selected_building = "LumberYard"
     selected_img = pygame.image.load("Images/Buildings/Dark_LumberYard.png").convert()
@@ -115,10 +91,10 @@ def run():
         pos = Vector2(*pygame.mouse.get_pos())
         
         for event in pygame.event.get():
-            if event.type == QUIT:
+            if event.type == pygame.QUIT:
                 quit()
                 
-            if event.type == MOUSEBUTTONDOWN:
+            if event.type == pygame.MOUSEBUTTONDOWN:
                 if ( pos.x > world.clipper.minimap_rect.x and pos.y > world.clipper.minimap_rect.y ):
                     pass
                 else:
@@ -152,12 +128,12 @@ def run():
                             selected_building = None
                             world.clipper.side.update()
             
-            if event.type == MOUSEBUTTONUP:
+            if event.type == pygame.MOUSEBUTTONUP:
                 draw = False
                 held = False
                     
-            if event.type == KEYDOWN:
-                if event.key == K_F2 or event.key == K_F3 or event.key == K_F4:
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_F2 or event.key == pygame.K_F3 or event.key == pygame.K_F4:
                     str1 =  str(datetime.now())
                     str1 = str1.split(".")
                     str2 = str1[0]+str1[1]
@@ -165,32 +141,32 @@ def run():
                     str1 = ""
                     for i in str2:
                         str1+=i
-                    if event.key == K_F2:
+                    if event.key == pygame.K_F2:
                         pygame.image.save(screen, "Images/Screenshots/SCREENSHOT%s.png"%str1)
-                    elif event.key == K_F3:
+                    elif event.key == pygame.K_F3:
                         pygame.image.save(world.clipper.minimap, "Images/Screenshots/MinimapSCREENSHOT%s.png"%str1)
-                    elif event.key == K_F4:
+                    elif event.key == pygame.K_F4:
                         pygame.image.save(world.background, "Images/Screenshots/FULL_MAP_RENDER%s.png"%str1)
-                if event.key == K_n:
+                if event.key == pygame.K_n:
                     world.new_world()
                     #pygame.image.save(world.background, "Images/ShadowsRandomWorldGen.png")
                     
-            if event.type == VIDEORESIZE:
+            if event.type == pygame.VIDEORESIZE:
                 Owidth, Oheight = event.size
                 
         #------------------Keys Below--------------------------------------------------
         pressed_keys = pygame.key.get_pressed()
-        if pressed_keys[K_ESCAPE]:  #quits the game
+        if pressed_keys[pygame.K_ESCAPE]:  #quits the game
             pygame.quit() 
             exit()
             
-        if pressed_keys[K_SPACE]:   #Resets wood
+        if pressed_keys[pygame.K_SPACE]:   #Resets wood
             world.wood = 0
         
-        if pressed_keys[K_d]:   #Fast-forward-esk functionability
+        if pressed_keys[pygame.K_d]:   #Fast-forward-esk functionability
             world.clock_degree+=5
             
-        if pressed_keys[K_l]:   #Test to see what the first entity's state is
+        if pressed_keys[pygame.K_l]:   #Test to see what the first entity's state is
             print world.entities[1].brain.active_state
             
         #--------------Keys Above----------------------------------------
