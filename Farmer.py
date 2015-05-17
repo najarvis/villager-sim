@@ -123,8 +123,9 @@ class Farmer_Planting(State):
 
     def random_dest(self):
         # Function for going to a random destination
-        angle = math.radians(random.randint(0,360))
-        distance = random.randint(10, 25)
+        self.farmer.orientation += random.randint(-20, 20)
+        angle = math.radians(self.farmer.orientation)
+        distance = random.randint(25, 50)
         random_dest = (self.farmer.location.x + math.cos(angle) * distance, self.farmer.location.y + math.sin(angle) * distance)
         self.farmer.destination = Vector2(*random_dest)
 

@@ -7,7 +7,6 @@ from World import World
 from datetime import datetime
 from Clips import Clips
 
-
 def run():
     tile_size = 32
     font = pygame.font.SysFont("Terminal", 20)

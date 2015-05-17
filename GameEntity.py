@@ -13,7 +13,8 @@ class GameEntity(object):
         self.name = name
 
         self.image = image
-
+        self.orientation = 0
+        
         try:
             self.image.set_colorkey((255, 0, 255))
         except AttributeError:

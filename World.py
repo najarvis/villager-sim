@@ -550,7 +550,10 @@ class World(object):  # Class that stores basically EVERYTHING
                     continue
 
                 else:
-                    array[a][i] = self.TileArray[
-                        int((start_tile.y + a) - 1)][int((start_tile.x + i) - 1)]
+                    try:
+                        array[a][i] = self.TileArray[int((start_tile.y + a) - 1)][int((start_tile.x + i) - 1)]
+                    except IndexError:
+                        print a, i, start_tile
+                        raise IndexError
 
         return array
