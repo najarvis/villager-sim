@@ -9,31 +9,27 @@ from Clips import Clips
 from crossfade import CrossFade
 from random import randint
 
-TILE_SIZE = 32 
-
-VILLAGER_COUNT = 15
-FARMER_COUNT = 45
-BUILDER_COUNT = 1
-
-font = pygame.font.SysFont("Terminal", 20)
-
-FULL_ON = 0
-
 def run():
+    tile_size = 32 
+
+    font = pygame.font.SysFont("Terminal", 20)
+
+    bool_full = 0
+    
     pygame.display.set_caption("Villager Simulation")
 
     sizes = pygame.display.list_modes()
-    SCREEN_SIZE = (1600,900)
+    screen_size = (1600,900)
     
     """Original screen size"""
-    Owidth, Oheight = SCREEN_SIZE
+    screen_width, screen_height = screen_size
     
-    side_size = Owidth/5.0
+    side_size = screen_width/5.0
 
-    if FULL_ON:
-        screen = pygame.display.set_mode(SCREEN_SIZE, pygame.FULLSCREEN|pygame.HWSURFACE, 32)
+    if bool_full:
+        screen = pygame.display.set_mode(screen_size, pygame.FULLSCREEN|pygame.HWSURFACE, 32)
     else:
-        screen = pygame.display.set_mode(SCREEN_SIZE, 0, 32)
+        screen = pygame.display.set_mode(screen_size, 0, 32)
     
     fade = CrossFade(screen)
     all_sprites = pygame.sprite.Group(fade)
@@ -41,26 +37,18 @@ def run():
     draw = False
     held = False
     
-    #Load the image the world will be based on, then set the world size proportionate to it
-    
-    #world_img_str, mini_img_str = random_map("SCREENSHOT", "*")
-    #world_img = pygame.image.load(world_img_str).convert()
-    
-    #mini_img_str = None
-    #world_img = mapGenerator.whole_new(25, (256,256))
-    
     size = (128,128)
-    w_size = size[0]*TILE_SIZE, size[1]*TILE_SIZE
+    w_size = size[0] * tile_size, size[1] * tile_size
 
     #seed = randint(0,100)
     seed = None
-    #print seed
 
-    world = World(SCREEN_SIZE, w_size, font, seed, screen)
+    world = World(screen_size, w_size, font, seed, screen)
     #pygame.image.save(world.minimap_img, "Images/UBER-COOL-small.png")
 
 
-    #These are all loaded here so that 
+    #These are all loaded here to be used in the main file. 
+    #TODO: Move these somewhere else
     Villager_image = pygame.image.load("Images/Entities/Villager.png").convert()
     Farmer_image = pygame.image.load("Images/Entities/Farmer.png").convert()
     Lumberjack_image = pygame.image.load("Images/Entities/Lumberjack.png").convert()
@@ -78,7 +66,7 @@ def run():
     bad_lumberyard_img = pygame.image.load("Images/Buildings/Red_LumberYard.png").convert()
     bad_lumberyard_img.set_colorkey((255,0,255))
     
-    world.clipper = Clips(world, (Owidth, Oheight))
+    world.clipper = Clips(world, (screen_width, screen_height))
     
     selected_building = "LumberYard"
     selected_img = pygame.image.load("Images/Buildings/Dark_LumberYard.png").convert()
@@ -99,6 +87,7 @@ def run():
                     pass
                 else:
                     if event.button == 1:
+                        #TODO: Figure out what the fuck this does
                         held = True
                         start = Vector2(*pygame.mouse.get_pos())
                         draw = True
@@ -152,7 +141,7 @@ def run():
                     #pygame.image.save(world.background, "Images/ShadowsRandomWorldGen.png")
                     
             if event.type == pygame.VIDEORESIZE:
-                Owidth, Oheight = event.size
+                screen_width, screen_height = event.size
                 
         #------------------Keys Below--------------------------------------------------
         pressed_keys = pygame.key.get_pressed()
@@ -173,7 +162,7 @@ def run():
         #--------------Mouse Below---------------------------------------
         
         if int(pos.x) <= 15:
-            if not FULL_ON:
+            if not bool_full:
                 pygame.mouse.set_pos((15, pos.y))
             world.background_pos.x+=500*time_passed_seconds
             #print world.background_pos.x
@@ -182,19 +171,19 @@ def run():
                 world.background_pos.x = side_size
 
             
-        elif int(pos.x) >= Owidth-16:
-            if not FULL_ON:
-                pygame.mouse.set_pos((Owidth-16, pos.y))
+        elif int(pos.x) >= screen_width-16:
+            if not bool_full:
+                pygame.mouse.set_pos((screen_width-16, pos.y))
             world.background_pos.x-=500*time_passed_seconds
             
             
-            if world.background_pos.x < -1*(world.w - Owidth):
-                world.background_pos.x = -1*(world.w - Owidth)
+            if world.background_pos.x < -1*(world.w - screen_width):
+                world.background_pos.x = -1*(world.w - screen_width)
             
             #print world.background_pos.x
             
         if int(pos.y) <= 15:
-            if not FULL_ON:
+            if not bool_full:
                 pygame.mouse.set_pos((pos.x, 15))
             world.background_pos.y+=500*time_passed_seconds
             
@@ -202,15 +191,15 @@ def run():
             if world.background_pos.y > 0:
                 world.background_pos.y = 0
             
-        elif int(pos.y) >= Oheight-16:
+        elif int(pos.y) >= screen_height-16:
             
-            if not FULL_ON:
-                pygame.mouse.set_pos((pos.x, Oheight-16))
+            if not bool_full:
+                pygame.mouse.set_pos((pos.x, screen_height-16))
             
             world.background_pos.y-= 500 * time_passed_seconds
             
-            if world.background_pos.y < -1*(world.h - Oheight):
-                world.background_pos.y = -1*(world.h - Oheight)
+            if world.background_pos.y < -1*(world.h - screen_height):
+                world.background_pos.y = -1*(world.h - screen_height)
             
         if pygame.mouse.get_pressed()[0]:
             if pos.x > world.clipper.minimap_rect.x and pos.y > world.clipper.minimap_rect.y:
