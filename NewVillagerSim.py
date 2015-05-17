@@ -25,7 +25,6 @@ from Clips import *
 
 from crossfade import CrossFade
 
-from VoronoiMapGenTaxi import point, mapGen
 from random import randint
 
 TILE_SIZE = 32 
@@ -37,17 +36,6 @@ BUILDER_COUNT = 1
 font = pygame.font.SysFont("Terminal", 20)
 
 FULL_ON = 0
-
-def me_double_size(image):
-    """Function for making an image the same size but just 1/2 the quality
-       Was going to be used in water path finding algorithm"""
-       
-    Size = image.get_size()
-    SmSize = (Size[0]*10, Size[1]*10)
-    SmImage = pygame.transform.scale(image, SmSize)
-    #NormalImage = pygame.transform.scale(SmImage, Size)
-    return SmImage
-    
 
 def run():
     pygame.display.set_caption("Villager Simulation")
@@ -123,8 +111,7 @@ def run():
     world.clock.tick()
     while True:
         
-        time_passed = world.clock.tick(60)
-        time_passed_seconds = time_passed/1000.
+        time_passed_seconds = world.clock.tick(60) / 1000.
         pos = Vector2(*pygame.mouse.get_pos())
         
         for event in pygame.event.get():

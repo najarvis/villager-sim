@@ -105,13 +105,6 @@ class World(object):        #Class that stores basically EVERYTHING
         del self.full_surface
         #seed(self.seed)
         vorMap = self.mapGenerator.negativeArray(self.mapGenerator.reallyCoolFull(self.ssize, num_p=23))
-        #img = self.mapGenerator.negative(self.mapGenerator.whole_new(25, self.ssize, c1=-1, c2=1, DrawSurface=self.DrawSurface))
-        #img = self.mapGenerator.whole_new(25, self.ssize, 1, -1)
-
-        #vorMap = self.mapGenerator.whole_new(25, size = (self.ssize[0]+1,self.ssize[1]+1), c1=-1,c2=1)
-        #flatMap = self.mapGenerator.flat(25, size=(self.ssize[0]+1,self.ssize[1]+1))
-
-        #newTotal = self.midpointGenerator.addArrayValues(vorMap, flatMap,1)
 
         self.map_width = self.map_height = len(vorMap)
         
@@ -251,13 +244,8 @@ class World(object):        #Class that stores basically EVERYTHING
                     dark_surface = pygame.Surface((32,32))
                     dark_surface.set_alpha(128)
                 #-----------
-                    
-                #Used for determening start position
-                if color2[1] == 255:
-                    WORLD_START_POS = (i,a)
-                #-----
 				
-                tile.location = Vector2(i<<5, a<<5)
+                tile.location = Vector2(i << 5, a << 5)
                 tile.rect.topleft = tile.location
                 tile.color = color
                 
@@ -278,15 +266,6 @@ class World(object):        #Class that stores basically EVERYTHING
                 
                 self.background.blit(dark_surface, tile.location)
                 self.background.blit(dark_surface2, tile.location)
-                
-                """
-                try:
-                    percentage = (color-last_color) / float(colorb - last_color)
-                    
-                except ZeroDivisionError:
-                    percentage = 0.0
-                combined_img = self.mapGenerator.lerp_two_images(tile.img, last_image, percentage)
-                """
                 
                 #self.minimap_img.blit(combined_img.subsurface((0,0,1,1)), (i,a))
                 self.minimap_img.blit(tile.img.subsurface((0,0,1,1)), (i,a))
