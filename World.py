@@ -1,7 +1,7 @@
 import pygame
 from pygame.locals import *
 
-from math import cos, sin, pi
+import math
 
 from vector2 import Vector2
 
@@ -72,7 +72,7 @@ class World(object):  # Class that stores basically EVERYTHING
         self.MAXfood = 0
         self.population = 0
         self.MAXpopulation = 15
-        self.background_pos = Vector2(ss[0] / 5.0, 0)
+        self.background_pos = self.center.copy()
 
         self.mapGenerator = mapGen()
 
@@ -259,7 +259,7 @@ class World(object):  # Class that stores basically EVERYTHING
 
                 tile.darkness = alph
 
-                self.background.blit(dark_surface, tile.location)
+                #self.background.blit(dark_surface, tile.location)
                 self.background.blit(dark_surface2, tile.location)
 
                 # self.minimap_img.blit(combined_img.subsurface((0,0,1,1)), (i,a))
@@ -279,7 +279,7 @@ class World(object):  # Class that stores basically EVERYTHING
         self.cliper = Clips(self, self.ss)
 
     def populate(self):
-        FARMER_COUNT = 4
+        FARMER_COUNT = 5
         VILLAGER_COUNT = 5
         BUILDER_COUNT = 1
 
@@ -557,3 +557,20 @@ class World(object):  # Class that stores basically EVERYTHING
                         raise IndexError
 
         return array
+    
+    def get_vnn_array(self, location, r):
+        """ Stands for Von Neumann Neighborhood. 
+            Simply returns a neighborhood based on the initial location and range r"""
+        return_array = []
+        for row_number in range((2 * r) - 1):
+            if row_number >= r:
+                num_in_row = (2 * row_number) - (4 * (row_number - r + 1) - 1)
+            else:
+                num_in_row = (2 * row_number) + 1
+        
+            for cell in range(num_in_row):
+                    
+                new_location = (location.x + (cell - math.floor(num_in_row / 2.0)), location.y + (row_number - (r - 1)))
+                return_array.append(Vector2(*new_location))
+                
+        return return_array

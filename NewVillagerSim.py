@@ -25,13 +25,14 @@ def run():
     draw = False
     held = False
 
-    size = (128, 128)
+    size = (256, 256)
     w_size = size[0] * tile_size, size[1] * tile_size
 
-    # seed = random.randint(0,100)
     seed = None
+    #print seed
 
     world = World(screen_size, w_size, font, seed, screen)
+    print world.get_vnn_array(Vector2(), 3)
 
     # These are all loaded here to be used in the main file.
     # TODO: Move these somewhere else
@@ -117,13 +118,13 @@ def run():
                         str1 += i
                         
                     if event.key == pygame.K_F2:
-                        pygame.image.save(screen,"Images/Screenshots/SCREENSHOT%select_surface.png" %str1)
+                        pygame.image.save(screen, "Images/Screenshots/SCREENSHOT%s.png" %str1)
                         
                     elif event.key == pygame.K_F3:
-                        pygame.image.save(world.clipper.minimap, "Images/Screenshots/MinimapSCREENSHOT%select_surface.png" %str1)
+                        pygame.image.save(world.clipper.minimap, "Images/Screenshots/MinimapSCREENSHOT%s.png" %str1)
                         
                     elif event.key == pygame.K_F4:
-                        pygame.image.save(world.background,"Images/Screenshots/FULL_MAP_RENDER%select_surface.png" %str1)
+                        pygame.image.save(world.background, "Images/Screenshots/FULL_MAP_RENDER%s.png" %str1)
                         
                 if event.key == pygame.K_n:
                     world.new_world()

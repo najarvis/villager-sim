@@ -121,12 +121,20 @@ class Farmer_Planting(State):
         self.farmer.hit = 0
         self.random_dest()
 
-    def random_dest(self):
+    def random_dest(self, recurse=False):
         # Function for going to a random destination
-        self.farmer.orientation += random.randint(-20, 20)
+        if recurse:
+            self.farmer.orientation += 20
+        else:
+            self.farmer.orientation += random.randint(-20, 20)
         angle = math.radians(self.farmer.orientation)
-        distance = random.randint(25, 50)
+        distance = random.randint(50, 100)
         random_dest = (self.farmer.location.x + math.cos(angle) * distance, self.farmer.location.y + math.sin(angle) * distance)
+        if self.farmer.world.get_tile(Vector2(*random_dest)).name == "WaterTile":
+            try:
+                self.random_dest(True)
+            except RuntimeError:
+                print "SOMEONE IS DROWNING!!"
         self.farmer.destination = Vector2(*random_dest)
 
     def entry_actions(self):
