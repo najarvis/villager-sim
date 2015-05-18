@@ -25,7 +25,7 @@ def run():
     draw = False
     held = False
 
-    size = (256, 256)
+    size = (128, 128)
     w_size = size[0] * tile_size, size[1] * tile_size
 
     seed = None
