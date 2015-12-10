@@ -38,23 +38,17 @@ class mapGen:
     def lerp(self, c1, c2, a):
         return c1+(c2-c1)*a
 
-    def whole_new(self, num_R, size=(256, 256), c1=0, c2=0, c3=0, name="", DrawSurface=None, num=1):
+    def whole_new(self, num_R, size=(256, 256), c1=0, c2=0, c3=0, name="", num=1):
         # Creates 1 image of the voronoi diagram. I only listed the first 3
         # coefficients because that's all I will really need, but feel free
         # to add more
-        surface = pygame.Surface(size)
         w, h = size  # Very easy to use w and h instead of size[0] and size[1]
-        if DrawSurface != None:
-            DrawSurfaceWidth = DrawSurface.get_width()
 
         toReturn = [[0 for i in xrange(size[0])] for j in xrange(size[1])]
 
         point_list = [point((randint(0, w), randint(0, h))) for i in
                       range(num_R)]  # Creates the random "interest" points,
 
-        # old_caption = pygame.display.get_caption()
-        pygame.display.set_caption("CALCULATING "+name)
-        # Let the player know if the program is still calculating
 
         # maxB=0
         # minB=0
@@ -80,15 +74,6 @@ class mapGen:
                 clr = min(255, clr)  # Make sure we don't for some reason overflow
                 toReturn[x][y] = clr
                 # surface.set_at((x,y), (clr, clr, clr))  #set the point
-            if DrawSurface != None:
-                barWidth = ((y*w)/float(h*w))*DrawSurfaceWidth
-                pygame.draw.rect(DrawSurface, (self.lerp(255, 0, .2*num), self.lerp(0, 255, .2*num), 0),
-                                 (0, 50*num, barWidth, 20))
-                pygame.display.update()
-        surface.unlock()  # unlock because the loop is done
-        if DrawSurface != None:
-            # DrawSurface.fill((0,0,0))
-            pass
 
         # pygame.display.set_caption("DONE")  #tell the user that the program has finished calculating
 
