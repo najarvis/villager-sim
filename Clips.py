@@ -9,7 +9,7 @@ dial.set_colorkey((255, 0, 255))
 buildings = ["House", "LumberYard", "Dock", "Manor"]
 
 
-class Clips:
+class Clips(object):
     """
     ______________________
     |_ |_ |              |
@@ -107,7 +107,7 @@ class Clips:
             pass
 
 
-class sidebar():
+class sidebar(object):
 
     def __init__(self, world, size):
         self.world = world
@@ -263,7 +263,7 @@ class sidebar():
                     pass
 
 
-class icon_tile():
+class icon_tile(object):
 
     def __init__(self, const, representing, pos):
         self.selected_image = pygame.image.load(

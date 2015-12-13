@@ -8,7 +8,7 @@ red_color = (200, 50, 50)
 yellow_color = (128, 128, 0)
 
 
-class new_icon_maker:
+class new_icon_maker(object):
     def __init__(self):
         pass
 

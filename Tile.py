@@ -3,7 +3,7 @@ import pygame
 from gametools.vector2 import Vector2
 
 
-class Tile:
+class Tile(object):
     def __init__(self, world, img):
         self.world = world
         self.name = "BASETILE"
