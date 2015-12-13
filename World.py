@@ -3,7 +3,7 @@ from pygame.locals import *
 
 import math
 
-from vector2 import Vector2
+from gametools.vector2 import Vector2
 
 import Tile
 
@@ -17,7 +17,7 @@ from Farmer import *
 from Clips import Clips
 
 from random import randint, seed
-from VoronoiMapGen import point, mapGen
+from gametools.VoronoiMapGen import mapGen
 
 lush_grass_img = pygame.image.load("Images/Tiles/MyGrass.png")
 grass_img = pygame.image.load("Images/Tiles/MinecraftGrass.png")
@@ -109,7 +109,7 @@ class World(object):  # Class that stores basically EVERYTHING
     def new_world(self):
         del self.full_surface
         # seed(self.seed)
-        vorMap = self.mapGenerator.negativeArray(
+        vorMap = self.mapGenerator.negative(
             self.mapGenerator.reallyCoolFull(
                 self.ssize,
                 num_p=23))

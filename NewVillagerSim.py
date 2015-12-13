@@ -5,7 +5,7 @@ import pygame
 
 pygame.init()
 
-from vector2 import Vector2
+from gametools.vector2 import Vector2
 from World import World
 from datetime import datetime
 from Clips import Clips
@@ -17,7 +17,7 @@ def run():
     tile_size = 32
     font = pygame.font.SysFont("Terminal", 20)
     bool_full = 0
-    screen_size = (1600, 900)
+    screen_size = (1280, 720)
 
     screen_width, screen_height = screen_size
 

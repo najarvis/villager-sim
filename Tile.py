@@ -1,6 +1,6 @@
 import pygame
 
-from vector2 import Vector2
+from gametools.vector2 import Vector2
 
 
 class Tile:

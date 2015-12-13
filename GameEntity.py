@@ -1,6 +1,6 @@
 from World import *
 from StateMachine import *
-from vector2 import *
+from gametools.vector2 import *
 
 import pygame
 from pygame.locals import *
