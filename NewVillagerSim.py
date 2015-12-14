@@ -12,8 +12,7 @@ from Clips import Clips
 
 
 def run():
-    """Run the Game
-    """
+    """Run the Game"""
     tile_size = 32
     font = pygame.font.SysFont("Terminal", 20)
     bool_full = 0
@@ -64,14 +63,16 @@ def run():
     selected_img.set_colorkey((255, 0, 255))
 
     world.clock.tick()
-    while True:
+
+    done = False
+    while not done:
 
         time_passed_seconds = world.clock.tick(60) / 1000.
         pos = Vector2(*pygame.mouse.get_pos())
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                quit()
+                done = True
 
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if (pos.x > world.clipper.minimap_rect.x and pos.y >
@@ -135,14 +136,16 @@ def run():
                 if event.key == pygame.K_n:
                     world.new_world()
 
+                if event.key == pygame.K_ESCAPE:
+                    done = True
+
             if event.type == pygame.VIDEORESIZE:
                 screen_width, screen_height = event.size
 
         # ------------------Keys Below--------------------------------------
         pressed_keys = pygame.key.get_pressed()
         if pressed_keys[pygame.K_ESCAPE]:  # quits the game
-            pygame.quit()
-            exit()
+            done = True
 
         if pressed_keys[pygame.K_SPACE]:  # Resets wood
             world.wood = 0
@@ -277,6 +280,7 @@ def run():
         pygame.display.flip()
         pygame.display.set_caption("VillagerSim! Have fun!")
 
+    pygame.quit()
 
 if __name__ == "__main__":
     run()

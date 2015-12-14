@@ -79,6 +79,7 @@ class World(object):  # Class that stores basically EVERYTHING
         self.background_over = pygame.Surface((1600, 900), HWSURFACE)
         self.background_over.set_alpha(128)
         self.background_over.fill((0, 0, 20, 128))
+        self.full_map_shadow = False #Controls if the full map will have hard shadows
 
         self.full_surface = pygame.Surface(self.size, HWSURFACE)
 
@@ -259,7 +260,8 @@ class World(object):  # Class that stores basically EVERYTHING
 
                 tile.darkness = alph
 
-                #self.background.blit(dark_surface, tile.location)
+                if self.full_map_shadow:
+                    self.background.blit(dark_surface, tile.location)
                 self.background.blit(dark_surface2, tile.location)
 
                 # self.minimap_img.blit(combined_img.subsurface((0,0,1,1)), (i,a))
