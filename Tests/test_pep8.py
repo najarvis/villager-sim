@@ -44,7 +44,7 @@ class TestCodeFormat(unittest.TestCase):
                                         'Villager.py',
                                         'World.py',
                                         'Tests/test_pep8.py',
-                                        'Tests/animation_test.py',])
+                                        'Tests/animation_test.py'])
         self.assertEqual(result.total_errors, 0,
                          "Found code style errors (and warnings).")
 
