@@ -60,10 +60,6 @@ class Farmer(GameEntity):
             else:
                 self.num += 1
 
-    def render(self, surface):
-
-        GameEntity.render(self, surface)
-
 
 class Farmer_Planting(State):
     def __init__(self, Farmer):
@@ -72,7 +68,7 @@ class Farmer_Planting(State):
         self.farmer = Farmer
 
     def check_conditions(self):
-        if self.farmer.location.get_distance_to(self.farmer.destination) < 2:
+        if self.farmer.location.get_distance_to(self.farmer.destination) < 15:
             self.farmer.destination = Vector2(self.farmer.location)
             self.farmer.update()
 
@@ -111,8 +107,8 @@ class Farmer_Planting(State):
             self.farmer.world.Baby_TreeID += 1
 
             self.farmer.world.TileArray[int(new_tile.location.y/32)][int(new_tile.location.x/32)] = new_tile
-            self.farmer.world.background.blit(new_tile.img, new_tile.location)
-            self.farmer.world.background.blit(darkness, new_tile.location)
+            self.farmer.world.full_surface.blit(new_tile.img, new_tile.location)
+            self.farmer.world.full_surface.blit(darkness, new_tile.location)
 
             # Add the location to a dictionary so villagers can see how far they are from it.
             self.farmer.world.baby_tree_locations[str(self.farmer.world.Baby_TreeID)] = new_tile.location
@@ -130,7 +126,7 @@ class Farmer_Planting(State):
         angle = math.radians(self.farmer.orientation)
         distance = random.randint(50, 100)
         random_dest = (self.farmer.location.x + math.cos(angle) * distance, self.farmer.location.y + math.sin(angle) * distance)
-        if self.farmer.world.get_tile(Vector2(*random_dest)).name == "WaterTile":
+        if not self.farmer.world.get_tile(Vector2(*random_dest)).walkable:
             try:
                 self.random_dest(True)
             except RuntimeError:

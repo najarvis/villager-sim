@@ -3,6 +3,7 @@ from World import *
 from GameEntity import *
 from vector2 import *
 import glob
+import FishingShip
 
 from random import *
 
@@ -16,39 +17,9 @@ class Building(GameEntity):
         self.tile_x, self.tile_y = pos
         self.cost = 100
         get_images(name)
-
-    def get_images(self, name):
-        self.images = []
-        try:
-            if name != "UC":
-                self.basic_img = pygame.image.load(glob.glob("Images/Buildings/%s.png"%name))
-                self.images.append(self.basic_img)
-                self.red_img = pygame.image.load(glob.glob("Images/Buildings/RED_%s.png"%name))
-                self.images.append(self.red_img)
-                self.dark_img = pygame.image.load(glob.glob("Images/Buildings/DARK_%s.png"%name))
-                self.images.append(self.dark_img)
-                self.selected_img = pygame.image.load(glob.glob("Images/Buildings/SELECTED_%s_Icon"%name))
-                self.images.append(self.selected_img)
-                self.icon_img = pygame.image.load(glob.glob("%s_Icon.png"%name))
-                self.images.append(self.selected_img)
-            else:
-                self.house_img = pygame.image.load("Images/Buildings/UC_House.png")
-                self.dock_img = pygame.image.load("Images/Buildings/UC_Dock.png")
-                self.manor_img = pygame.image.load("UC.png")
-                self.lumber_img = pygame.image.load("UC.png")
-
-                self.images.append(self.house_img)
-                self.images.append(self.dock_img)
-                self.images.append(self.manor_img)
-                self.images.append(self.lumber_img)
-        except Exception:
-            pass
-        for i in self.images:
-            i.set_colorkey((255, 0, 255))
-
-    def convert_all(self):
-        for i in self.images:
-            i.convert()
+        
+        self.can_drop_food = False
+        self.can_drop_wood = False
 
 
 class LumberYard(Building):
@@ -61,9 +32,11 @@ class LumberYard(Building):
         self.cost = 100
 
         self.world.MAXwood += self.HeldMax
+        self.can_drop_wood = True
 
 
 class Dock(Building):
+    
     def __init__(self, world, img):
         name = "Dock"
         Building.__init__(self, world, name, img)
@@ -71,8 +44,16 @@ class Dock(Building):
         self.Held = 0
         self.HeldMax = 25
         self.cost = 150
+        
+        self.can_drop_food = True
 
         self.world.MAXfood += self.HeldMax
+        
+        new_ship = FishingShip.FishingShip(self.world, self.world.fishingship_img)
+        new_ship.location = self.location.copy()
+        new_ship.brain.set_state("Searching")
+        self.world.add_entity(new_ship)
+        self.world.population += 1
 
 
 class House(Building):
@@ -95,6 +76,20 @@ class Manor(Building):
         self.cost = 100
 
         self.world.MAXpopulation += self.supports
+        
+class TownCenter(Building):
+    def __init__(self, world, img):
+        Building.__init__(self, world, "Town Center", img)
+        
+        self.can_drop_food = True
+        self.can_drop_wood = True
+        
+        self.supports = 15
+        self.cost = 500
+        
+        self.world.MAXpopulation += self.supports
+        self.world.MAXWood += 50
+        self.world.MAXFood += 50
 
 
 class UnderConstruction(Building):

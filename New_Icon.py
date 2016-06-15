@@ -43,9 +43,8 @@ class new_icon_maker:
 
 maker = new_icon_maker()
 
-big_img = pygame.image.load("Images/Buildings/Dock.png").convert()
+big_img = pygame.image.load("Images/Buildings/TotalImage.png").convert().subsurface(64, 192, 64, 64)
 big_img.set_colorkey((255, 0, 255))
 
-tile_img = pygame.image.load("Images/Tiles/AndrewWater.png").convert()
-# icon1 = maker.color(big_img, tile_img, 32, "Dock", "SELECTED")
-icon1 = maker.color(big_img, tile_img, 32, "Dock", "SELECTED")
+tile_img = pygame.image.load("Images/Tiles/MinecraftGrass.png").convert()
+icon1 = maker.get_icon(big_img, tile_img, 32, "TownHall")

@@ -77,7 +77,7 @@ class Searching(State):
         pass
 
     def check_conditions(self):
-        if self.lumberjack.location.get_distance_to(self.lumberjack.destination) < 2:
+        if self.lumberjack.location.get_distance_to(self.lumberjack.destination) < 15:
             location_array = self.lumberjack.world.get_vnn_array((self.lumberjack.location), self.lumberjack.view_range)
 
             for location in location_array:
@@ -103,7 +103,7 @@ class Searching(State):
         angle = math.radians(self.lumberjack.orientation)
         distance = random.randint(25, 50)
         random_dest = (self.lumberjack.location.x + math.cos(angle) * distance, self.lumberjack.location.y + math.sin(angle) * distance)
-        if self.lumberjack.world.get_tile(Vector2(*random_dest)).name == "WaterTile":
+        if not self.lumberjack.world.get_tile(Vector2(*random_dest)).walkable:
             try:
                 self.random_dest(True)
             except RuntimeError:
@@ -125,7 +125,7 @@ class Chopping(State):
 
     def check_conditions(self):
         check = self.lumberjack.world.get_tile(Vector2(self.lumberjack.location))
-        if self.lumberjack.location.get_distance_to(self.lumberjack.destination) < 2:
+        if self.lumberjack.location.get_distance_to(self.lumberjack.destination) < 15:
             self.lumberjack.destination = Vector2(self.lumberjack.location)
 
             if check.name != "TreePlantedTile_W":
@@ -156,8 +156,8 @@ class Chopping(State):
                 new_tile.color = old_tile.color
 
                 self.lumberjack.world.TileArray[int(new_tile.location.y/32)][int(new_tile.location.x/32)] = new_tile
-                self.lumberjack.world.background.blit(new_tile.img, new_tile.location)
-                self.lumberjack.world.background.blit(darkness, new_tile.location)
+                self.lumberjack.world.full_surface.blit(new_tile.img, new_tile.location)
+                self.lumberjack.world.full_surface.blit(darkness, new_tile.location)
 
                 self.lumberjack.hit = 0
 
@@ -197,7 +197,7 @@ class Delivering(State):
         # if self.lumberjack.world.wood >= self.lumberjack.world.MAXwood:
         #    return "IDLE"
 
-        if self.lumberjack.location.get_distance_to(self.lumberjack.destination) < 2.0:
+        if self.lumberjack.location.get_distance_to(self.lumberjack.destination) < 15:
             self.lumberjack.world.wood += 5
             return "Searching"
 

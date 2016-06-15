@@ -103,3 +103,10 @@ class SnowTile(Tile):
     def __init__(self, world, img):
         Tile.__init__(self, world, img)
         self.name = "SnowTile"
+        
+        
+class NullTile(Tile):
+    
+    def __init__(self, world, img):
+        Tile.__init__(self, world, img)
+        self.name = "NULL"

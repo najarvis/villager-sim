@@ -10,29 +10,27 @@ from Clips import Clips
 def run():
     tile_size = 32
     font = pygame.font.SysFont("Terminal", 20)
-    bool_full = 0
-    screen_size = (1600, 900)
+    bool_full = False
+    screen_size = (1280, 720)
 
     screen_width, screen_height = screen_size
 
     side_size = screen_width / 5.0
 
     if bool_full:
-        screen = pygame.display.set_mode(screen_size, pygame.FULLSCREEN | pygame.HWSURFACE, 32)
+        screen = pygame.display.set_mode((1600, 900), pygame.FULLSCREEN | pygame.HWSURFACE, 32)
     else:
         screen = pygame.display.set_mode(screen_size, 0, 32)
 
     draw = False
     held = False
 
-    size = (128, 128)
-    w_size = size[0] * tile_size, size[1] * tile_size
+    s_size = 128
+    size = (s_size, s_size)
 
     seed = None
-    #print seed
 
-    world = World(screen_size, w_size, font, seed, screen)
-    print world.get_vnn_array(Vector2(), 3)
+    world = World(size, font, seed, screen_size)
 
     # These are all loaded here to be used in the main file.
     # TODO: Move these somewhere else
@@ -58,22 +56,23 @@ def run():
     selected_img.set_colorkey((255, 0, 255))
 
     world.clock.tick()
-    while True:
-
-        time_passed_seconds = world.clock.tick(60) / 1000.
+    done = False
+    while not done:
+        
+        time_passed_seconds = world.clock.tick_busy_loop(60) / 1000.
         pos = Vector2(*pygame.mouse.get_pos())
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                quit()
+                done = False
 
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if (pos.x > world.clipper.minimap_rect.x and pos.y >
                         world.clipper.minimap_rect.y):
                     pass
                 else:
-                    if event.button == 1:
-                        # TODO: Figure out what the fuck this does
+                    if event.button == 1 and selected_building is None:
+                        """This determines what icon you clicked on in the building selector"""
                         held = True
                         start = Vector2(*pygame.mouse.get_pos())
                         draw = True
@@ -93,14 +92,17 @@ def run():
                                         world.clipper.side.update(tile)
 
                         else:
-                            selected_building = None
                             world.clipper.side.update()
 
-                    if event.button == 3 and selected_building is not None:
-                        world.add_building(selected_building, pos)
-                        if world.test_buildable(selected_building, 0, pos):
-                            selected_building = None
-                            world.clipper.side.update()
+                    elif event.button == 1 and selected_building is not None:
+                        if pos.x > world.clipper.side.w:
+                            world.add_building(selected_building, pos)
+                            if world.test_buildable(selected_building, 0, pos):
+                                selected_building = None
+                                world.clipper.side.update()
+                            
+                    if event.button == 3:
+                        selected_building = None
 
             if event.type == pygame.MOUSEBUTTONUP:
                 draw = False
@@ -135,8 +137,7 @@ def run():
         #------------------Keys Below------------------------------------------
         pressed_keys = pygame.key.get_pressed()
         if pressed_keys[pygame.K_ESCAPE]:  # quits the game
-            pygame.quit()
-            exit()
+            done = True
 
         if pressed_keys[pygame.K_SPACE]:  # Resets wood
             world.wood = 0
@@ -268,6 +269,7 @@ def run():
         pygame.display.flip()
         pygame.display.set_caption("VillagerSim! Have fun!")
 
+    pygame.quit()
 
 if __name__ == "__main__":
     run()

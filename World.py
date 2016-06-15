@@ -16,6 +16,8 @@ from Farmer import *
 
 from Clips import Clips
 
+import GoalMachine
+
 from random import randint, seed
 from VoronoiMapGen import point, mapGen
 
@@ -40,86 +42,75 @@ uc_house_img = pygame.image.load("Images/Buildings/UC_House.png")
 lumberjack_img = pygame.image.load("Images/Entities/Lumberjack.png")
 farmer_img = pygame.image.load("Images/Entities/Farmer.png")
 builder_img = pygame.image.load("Images/Entities/Builder.png")
+fishingship_img = pygame.image.load("Images/Entities/fishingship.png")
 
 
-class World(object):  # Class that stores basically EVERYTHING
+class World(object):
+    """This class holds and does everything basically."""
 
-    def __init__(self, ss, WorldSize, font, rand_seed, surface):
-        self.DrawSurface = surface
-        # print self.DrawSurface
-        self.size = WorldSize  # How big the map is
-        self.TileSize = 32
-        self.ssize = (
-            self.size[0] /
-            self.TileSize,
-            self.size[1] /
-            self.TileSize)
+    def __init__(self, world_dimensions, font, rand_seed, screen_size):
+        
+        """Seed the map"""
         self.seed = rand_seed
         if self.seed is not None:
             seed(self.seed)
-
-        self.ss = ss
+            
+        """Set up dimensions"""
+        self.TileSize = 32
+        self.world_dimensions = world_dimensions
+        self.size = self.world_dimensions[0] * self.TileSize, self.world_dimensions[1] * self.TileSize  # How big the map is
+        
         self.w, self.h = self.size  # Certain functions entities need this.
         self.center = Vector2(self.w / 2, self.h / 2)
-
-        self.building = {}
-        self.entities = {}  # Stores all entities the game processes
-        # Each entity is given a unique id so the program can find it
-        self.entity_id = 0
-        self.wood = 0  # Probably will add other resources
-        self.MAXwood = 50
-        self.food = 0
-        self.MAXfood = 0
-        self.population = 0
-        self.MAXpopulation = 15
         self.background_pos = self.center.copy()
 
-        self.mapGenerator = mapGen()
-
-        self.background_over = pygame.Surface((1600, 900), HWSURFACE)
-        self.background_over.set_alpha(128)
-        self.background_over.fill((0, 0, 20, 128))
-
-        self.full_surface = pygame.Surface(self.size, HWSURFACE)
-
+        """The clock that will handle all timing"""
         self.clock = pygame.time.Clock()
 
-        self.shadowDown = 3.0 / ((self.size[0] / self.TileSize) / 128.0)
-        print "Shadow Down", self.shadowDown
-
-        self.background = pygame.Surface(
-            (self.size[0], self.size[1]), HWSURFACE)
-        self.background.fill((255, 255, 255))
-
+        """Set up the font the sidebar will use"""
         self.font = font
         self.font_size = self.font.size("A")[1]
 
-        self.text = self.font.render(str(self.wood), True,
-                                     (0, 0, 0))  # World entity also stores global font for rendering to the screen.
-
-        self.clock_degree = 0  # Used for the clock
-
+        """Convert all those images"""
         self.convert_all()
+        
+        """Set up the goal machine"""
+        self.goal_machine = GoalMachine.GoalMachine()
+        
+        self.expand_goal = GoalMachine.Goal("expand", 1)
+        self.wood_goal = GoalMachine.Goal("wood", .5)
+        self.food_goal = GoalMachine.Goal("food", .5)
+        self.shelter_goal = GoalMachine.Goal("shelter", .75)
+        
+        self.goal_machine.add_goal(self.expand_goal)
+        self.goal_machine.add_goal(self.wood_goal)
+        self.goal_machine.add_goal(self.food_goal)
+        self.goal_machine.add_goal(self.shelter_goal)
+        
+        self.spawn_lumberjack_action = GoalMachine.Action("spawn lumberjack", {"wood":-1})
+        self.spawn_farmer_action = GoalMachine.Action("spawn farmer", {"wood":-1})
+        self.build_house_action = GoalMachine.Action("build house", {"shelter":-1})
+        self.build_dock_action = GoalMachine.Action("build dock", {"food":-1})
+        self.spawn_fishing_ship_action = GoalMachine.Action("spawn fishing ship", {"food":-1})
+        
+        """Set up a new world"""
         self.new_world()
-        self.cliper = Clips(self, self.ss)
-
-        self.BuildingQueue = []
-        self.buildqueue = 0
+        self.cliper = Clips(self, screen_size)
 
     def new_world(self):
-        del self.full_surface
-        # seed(self.seed)
-        vorMap = self.mapGenerator.negativeArray(
-            self.mapGenerator.reallyCoolFull(
-                self.ssize,
-                num_p=23))
+        try:
+            del self.full_surface
+        except AttributeError:
+            pass
+        
+        self.mapGenerator = mapGen()
+        vorMap = self.mapGenerator.negativeArray(self.mapGenerator.reallyCoolFull(self.world_dimensions,num_p=23))
 
         self.map_width = self.map_height = len(vorMap)
 
         self.minimap_img = pygame.Surface((self.map_width, self.map_height))
 
-        self.TileArray = [
-            [0 for i in xrange(self.map_width)] for a in xrange(self.map_height)]
+        self.TileArray = [[0 for i in xrange(self.map_width)] for a in xrange(self.map_height)]
 
         self.TreeID = 0
         self.TreeLocations = {}
@@ -130,6 +121,7 @@ class World(object):  # Class that stores basically EVERYTHING
                           "Dock": {},
                           "House": {},
                           "Manor": {},
+                          "Town Center": {},
                           "UC": {}}
 
         self.building = {}
@@ -142,15 +134,15 @@ class World(object):  # Class that stores basically EVERYTHING
         self.MAXfood = 0
         self.population = 0
         self.MAXpopulation = 15
-        self.background_pos = Vector2(self.ss[0] / 5.0, 0)
-        self.mapGenerator = mapGen()
+        self.background_pos = self.center.copy()
+        
+        self.shadowDown = 3.0 / ((self.size[0] / self.TileSize) / 128.0)
 
         self.full_surface = pygame.Surface(self.size, HWSURFACE)
 
         self.clock_degree = 0  # Used for the clock
 
         self.BuildingQueue = []
-        self.buildqueue = 0
 
         for i in xrange(self.map_width):
             self.current_height = 0
@@ -240,14 +232,9 @@ class World(object):  # Class that stores basically EVERYTHING
                 tile.color = color
 
                 if to_rotate:
-                    tile.img = pygame.transform.rotate(
-                        tile.img,
-                        randint(
-                            0,
-                            4) *
-                        90)
+                    tile.img = pygame.transform.rotate(tile.img, randint(0, 4) * 90)
 
-                self.background.blit(tile.img, tile.location)
+                self.full_surface.blit(tile.img, tile.location)
 
                 dark_surface2 = pygame.Surface((32, 32))
 
@@ -259,8 +246,8 @@ class World(object):  # Class that stores basically EVERYTHING
 
                 tile.darkness = alph
 
-                #self.background.blit(dark_surface, tile.location)
-                self.background.blit(dark_surface2, tile.location)
+                self.full_surface.blit(dark_surface, tile.location)
+                self.full_surface.blit(dark_surface2, tile.location)
 
                 # self.minimap_img.blit(combined_img.subsurface((0,0,1,1)), (i,a))
                 self.minimap_img.blit(
@@ -276,9 +263,9 @@ class World(object):  # Class that stores basically EVERYTHING
                 self.TileArray[a][i] = tile
 
         self.populate()
-        self.cliper = Clips(self, self.ss)
 
     def populate(self):
+        """This is the initial code that spawns the initial entities"""
         FARMER_COUNT = 5
         VILLAGER_COUNT = 5
         BUILDER_COUNT = 1
@@ -289,7 +276,7 @@ class World(object):  # Class that stores basically EVERYTHING
         lumber1.tile_x, lumber1.tile_y = 4, 4
         self.add_entity(lumber1)
 
-        for Villager_no in xrange(VILLAGER_COUNT):  # Adds all Wood Cutters
+        for villager_num in xrange(VILLAGER_COUNT):  # Adds all Wood Cutters
             villager = Lumberjack(self, self.lumberjack_img)
             villager.location = lumber1.location.copy()
             villager.LastLumberYard = lumber1
@@ -297,14 +284,14 @@ class World(object):  # Class that stores basically EVERYTHING
             self.add_entity(villager)
             self.population += 1
 
-        for Building_no in xrange(BUILDER_COUNT):
+        for builder_num in xrange(BUILDER_COUNT):
             builder = Builder(self, self.builder_img, lumber1)
             builder.location = lumber1.location.copy()
             builder.brain.set_state("Idle")
             self.add_entity(builder)
             self.population += 1
 
-        for FARMER in xrange(FARMER_COUNT):  # Adds all the farmers
+        for farmer_num in xrange(FARMER_COUNT):  # Adds all the farmers
             farmer = Farmer(self, self.farmer_img)
             farmer.location = lumber1.location.copy()
             farmer.brain.set_state("Planting")
@@ -314,12 +301,10 @@ class World(object):  # Class that stores basically EVERYTHING
     def add_building(self, building, pos):
 
         buildable = self.test_buildable(building, 0, pos)
-        print pos
 
         if buildable:
             Build = buildable[1]
             Build.location = self.get_tile_pos(pos - self.background_pos) * 32
-            print "LOC: ", Build.location
             self.add_entity(Build)
             self.buildings[building] = Build
             self.BuildingQueue.append(Build)
@@ -328,12 +313,10 @@ class World(object):  # Class that stores basically EVERYTHING
     def add_built(self, building, pos):
 
         buildable = self.test_buildable(building, 1, pos)
-        print pos
 
         if buildable:
             Build = buildable[1]
             Build.location = pos
-            print "LOC2: ", Build.location
             self.add_entity(Build)
             self.buildings[building] = Build
             return 1
@@ -383,24 +366,29 @@ class World(object):  # Class that stores basically EVERYTHING
 
                     if test_tile.buildable != 1 and building != "Dock":
                         buildable = 0
-                        return 0
+                        return False
+                    
                     elif building == "Dock":
                         if test_tile.buildable_w:
                             water += 1
                         else:
                             land += 1
+                            
                 except IndexError:
-                    return 0
+                    return False
+                
+                except AttributeError:
+                    return False
 
         if building == "Dock":
             if water >= 1 and land <= 2 and land > 0:
                 buildable = 1
-                return 1, Build
+                return True, Build
             else:
                 buildable = 0
-                return 0
+                return False
 
-        return 1, Build
+        return True, Build
 
     def convert_all(self):
         self.lush_grass_img = lush_grass_img.convert()
@@ -434,6 +422,8 @@ class World(object):  # Class that stores basically EVERYTHING
         self.lumberjack_img = lumberjack_img.convert()
         self.farmer_img = farmer_img.convert()
         self.builder_img = builder_img.convert()
+        self.fishingship_img = fishingship_img.convert()
+        self.fishingship_img.set_colorkey((255, 0, 255))
 
     def grow_trees(self, trees):
         for i in range(len(trees)):
@@ -456,11 +446,10 @@ class World(object):  # Class that stores basically EVERYTHING
                     new_tile.id = self.TreeID
                     self.TreeID += 1
 
-                    self.TileArray[
-                        int(new_tile.location.y / 32)][int(new_tile.location.x / 32)] = new_tile
-                    self.background.blit(new_tile.img, new_tile.location)
-                    self.background.blit(darkness, new_tile.location)
-                    # print self.baby_tree_locations
+                    self.TileArray[int(new_tile.location.y / 32)][int(new_tile.location.x / 32)] = new_tile
+                    self.full_surface.blit(new_tile.img, new_tile.location)
+                    self.full_surface.blit(darkness, new_tile.location)
+
                     del self.baby_tree_locations[str(a[i])]
                 except IndexError:
                     pass
@@ -475,7 +464,7 @@ class World(object):  # Class that stores basically EVERYTHING
         del self.entities[entity.id]
 
     def remove_tree(self, tree_id):
-        # print len(self.TreeLocations)
+
         try:
             del self.TreeLocations[str(tree_id)]
             return 0
@@ -494,22 +483,13 @@ class World(object):  # Class that stores basically EVERYTHING
         for entity in self.entities.values():
             entity.process(time_passed)
 
-        self.wood_text = self.font.render("Wood: %d/%d" % (self.wood, self.MAXwood), True, (255, 255, 255))
-        self.food_text = self.font.render("Food: %d/%d" % (self.food, self.MAXfood), True, (255, 255, 255))
-        self.pop_text = self.font.render("Population: %d/%d" % (self.population, self.MAXpopulation), True, (255, 255, 255))
-        self.frame_text = self.font.render("FPS: %.2f" % (self.clock.get_fps()), True, (255, 255, 255))
-
-        semi_angle = abs(self.clock_degree - 180.0)
-        self.background_alpha = min((255 - (255 * (abs(semi_angle / 180)))), 220.0)
-        self.background_over.set_alpha(self.background_alpha)
-
     def render(self, surface):
-        surface.blit(self.background, self.background_pos)
+        surface.blit(self.full_surface, self.background_pos)
 
         for entity in self.entities.itervalues():
             entity.render(surface)
 
-        surface.blit(self.background_over, (0, 0))
+        #surface.blit(self.background_over, (0, 0))
 
     def render_all(self, surface, tp, mouse_pos):
         self.cliper.render(surface, tp, mouse_pos)
@@ -530,33 +510,13 @@ class World(object):  # Class that stores basically EVERYTHING
 
     def get_tile(self, location):
         tile = self.get_tile_pos(location)
-
-        return self.TileArray[int(tile.y)][int(tile.x)]
+        try:
+            return self.TileArray[int(tile.y)][int(tile.x)]
+        except IndexError:
+            return Tile.NullTile(self, self.sand_img)
 
     def get_tile_pos(self, location):
         return Vector2(int(location.x) >> 5, int(location.y) >> 5)
-
-    def get_tile_array(self, start_pos, dimensions):
-        dimensions = (int(dimensions[0]), int(dimensions[1]))
-
-        start_tile = self.get_tile_pos(start_pos)
-
-        array = [[None for i in xrange((dimensions[0] * 2) + 1)]
-                 for a in xrange((dimensions[1] * 2) + 1)]
-
-        for i in xrange((dimensions[0] * 2) + 1):
-            for a in xrange((dimensions[1] * 2) + 1):
-                if start_tile.x + i < 0 or start_tile.y + a < 0:
-                    continue
-
-                else:
-                    try:
-                        array[a][i] = self.TileArray[int((start_tile.y + a) - 1)][int((start_tile.x + i) - 1)]
-                    except IndexError:
-                        print a, i, start_tile
-                        raise IndexError
-
-        return array
     
     def get_vnn_array(self, location, r):
         """ Stands for Von Neumann Neighborhood. 

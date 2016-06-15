@@ -6,7 +6,7 @@ dial = pygame.image.load("Images/Dial/dial.png")
 dialol.set_colorkey((255, 0, 255))
 dial.set_colorkey((255, 0, 255))
 
-buildings = ["House", "LumberYard", "Dock", "Manor"]
+buildings = ["House", "LumberYard", "Dock", "Manor", "Town Center"]
 
 
 class Clips:
@@ -180,6 +180,10 @@ class sidebar():
                 str(self.world.get_tile(
                     mouse_pos - self.world.background_pos).name)
         except IndexError:
+            height = "NULL"
+            name = "NULL"
+            
+        except AttributeError:
             height = "NULL"
             name = "NULL"
 

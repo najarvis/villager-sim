@@ -38,12 +38,11 @@ class GameEntity(object):
 
     def process(self, time_passed):
         self.brain.think()
-        self.tp = time_passed
-        self.world_location = self.location+self.world.background_pos
+        self.world_location = self.location + self.world.background_pos
 
         if self.speed > 0. and self.location != self.destination:
-            vec_to_destination = self.destination-self.location
+            vec_to_destination = self.destination - self.location
             distance_to_destination = vec_to_destination.get_length()
             heading = vec_to_destination.get_normalized()
-            travel_distance = min(distance_to_destination, time_passed*self.speed)
-            self.location += travel_distance*heading*time_passed*self.speed
+            travel_distance = min(distance_to_destination, time_passed * self.speed)
+            self.location += travel_distance * heading * time_passed * self.speed
