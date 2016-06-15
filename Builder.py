@@ -1,7 +1,7 @@
 from StateMachine import *
 from World import *
 from GameEntity import *
-from vector2 import *
+from gametools.vector2 import Vector2
 
 from Building import *
 

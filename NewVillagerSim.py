@@ -1,13 +1,18 @@
+#!/usr/bin/env python
+#-*- coding:utf-8 -*-
+
 import pygame
 
 pygame.init()
 
-from vector2 import Vector2
+from gametools.vector2 import Vector2
 from World import World
 from datetime import datetime
 from Clips import Clips
 
+
 def run():
+    """Run the Game"""
     tile_size = 32
     font = pygame.font.SysFont("Terminal", 20)
     bool_full = False
@@ -64,7 +69,7 @@ def run():
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                done = False
+                done = True
 
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if (pos.x > world.clipper.minimap_rect.x and pos.y >
@@ -131,10 +136,13 @@ def run():
                 if event.key == pygame.K_n:
                     world.new_world()
 
+                if event.key == pygame.K_ESCAPE:
+                    done = True
+
             if event.type == pygame.VIDEORESIZE:
                 screen_width, screen_height = event.size
 
-        #------------------Keys Below------------------------------------------
+        # ------------------Keys Below--------------------------------------
         pressed_keys = pygame.key.get_pressed()
         if pressed_keys[pygame.K_ESCAPE]:  # quits the game
             done = True
@@ -193,7 +201,8 @@ def run():
                 """ If the player clicked on the mini map,
                     go to that location with the view centered on the event position"""
                 draw = False
-                if held != True:
+                if not held:
+                    # E712 comparison to True should be 'if cond is not True:' or 'if not cond:'
                     world.background_pos.x = (-1 * (pos.x - world.clipper.minimap_rect.x) * world.clipper.a) + (
                         world.clipper.rect_view_w * world.clipper.a) / 2
 
@@ -234,18 +243,20 @@ def run():
                                            (blit_pos.y - (selected_img.get_height() - 32)) + world.background_pos.y))
 
         # This is for selecting-------------
-        if draw == True and selected_building == None:
+        if draw and selected_building is None:
+            # E712 comparison to True should be 'if cond is True:' or 'if cond:'
+            # E711 comparison to None should be 'if cond is None:'
             current_mouse_pos = Vector2(*pygame.mouse.get_pos())
-            
+
             lst = world.get_tile_array(start, ((current_mouse_pos.x - start.x) / 32, (current_mouse_pos.x - start.x) / 32))
             for i in lst:
                 for j in i:
                     j.selected = 1
-                    
+
             select_surface = pygame.Surface((abs(current_mouse_pos.x - start.x), abs(current_mouse_pos.y - start.y)))
             select_surface.set_alpha(25)
             select_surface.fill((255, 255, 255))
-            
+
             if current_mouse_pos.x - \
                     start.x <= 0 and current_mouse_pos.y < start.y and current_mouse_pos.x > start.x:
                 newa = (current_mouse_pos.x - (current_mouse_pos.x - start.x), current_mouse_pos.y)

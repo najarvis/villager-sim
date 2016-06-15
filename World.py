@@ -3,7 +3,7 @@ from pygame.locals import *
 
 import math
 
-from vector2 import Vector2
+from gametools.vector2 import Vector2
 
 import Tile
 
@@ -19,7 +19,7 @@ from Clips import Clips
 import GoalMachine
 
 from random import randint, seed
-from VoronoiMapGen import point, mapGen
+from gametools.VoronoiMapGen import mapGen
 
 lush_grass_img = pygame.image.load("Images/Tiles/MyGrass.png")
 grass_img = pygame.image.load("Images/Tiles/MinecraftGrass.png")
@@ -64,6 +64,7 @@ class World(object):
         self.center = Vector2(self.w / 2, self.h / 2)
         self.background_pos = self.center.copy()
 
+
         """The clock that will handle all timing"""
         self.clock = pygame.time.Clock()
 
@@ -98,13 +99,14 @@ class World(object):
         self.cliper = Clips(self, screen_size)
 
     def new_world(self):
+
         try:
             del self.full_surface
         except AttributeError:
             pass
         
         self.mapGenerator = mapGen()
-        vorMap = self.mapGenerator.negativeArray(self.mapGenerator.reallyCoolFull(self.world_dimensions,num_p=23))
+        vorMap = self.mapGenerator.negative(self.mapGenerator.reallyCoolFull(self.world_dimensions, num_p=23))
 
         self.map_width = self.map_height = len(vorMap)
 
@@ -248,6 +250,7 @@ class World(object):
 
                 self.full_surface.blit(dark_surface, tile.location)
                 self.full_surface.blit(dark_surface2, tile.location)
+
 
                 # self.minimap_img.blit(combined_img.subsurface((0,0,1,1)), (i,a))
                 self.minimap_img.blit(
@@ -517,20 +520,42 @@ class World(object):
 
     def get_tile_pos(self, location):
         return Vector2(int(location.x) >> 5, int(location.y) >> 5)
-    
+
+    def get_tile_array(self, start_pos, dimensions):
+        dimensions = (int(dimensions[0]), int(dimensions[1]))
+
+        start_tile = self.get_tile_pos(start_pos)
+
+        array = [[None for i in xrange((dimensions[0] * 2) + 1)]
+                 for a in xrange((dimensions[1] * 2) + 1)]
+
+        for i in xrange((dimensions[0] * 2) + 1):
+            for a in xrange((dimensions[1] * 2) + 1):
+                if start_tile.x + i < 0 or start_tile.y + a < 0:
+                    continue
+
+                else:
+                    try:
+                        array[a][i] = self.TileArray[int((start_tile.y + a) - 1)][int((start_tile.x + i) - 1)]
+                    except IndexError:
+                        print a, i, start_tile
+                        raise IndexError
+        return array
+
     def get_vnn_array(self, location, r):
-        """ Stands for Von Neumann Neighborhood. 
-            Simply returns a neighborhood based on the initial location and range r"""
+        """ Stands for Von Neumann Neighborhood.
+            Simply returns a neighborhood based
+            on the initial location and range r"""
         return_array = []
         for row_number in range((2 * r) - 1):
             if row_number >= r:
                 num_in_row = (2 * row_number) - (4 * (row_number - r + 1) - 1)
             else:
                 num_in_row = (2 * row_number) + 1
-        
+
             for cell in range(num_in_row):
-                    
+
                 new_location = (location.x + (cell - math.floor(num_in_row / 2.0)), location.y + (row_number - (r - 1)))
                 return_array.append(Vector2(*new_location))
-                
+
         return return_array

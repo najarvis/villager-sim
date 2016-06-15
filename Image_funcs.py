@@ -1,7 +1,7 @@
 import pygame
 
 
-class image_funcs():
+class image_funcs(object):
     def __init__(self, w, h):
         self.w = w
         self.h = h
