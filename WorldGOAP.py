@@ -1,4 +1,4 @@
-import GoalMachine
+from aitools import GoalMachine
 
 """This file will be the customized version of the goal machine for this world"""
 
