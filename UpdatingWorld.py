@@ -117,19 +117,19 @@ class World(object):
 
                 self.tile_array[tile_x][tile_y] = new_tile
 
-                self.populate()
+        self.populate()
 
     def populate(self):
         
         for lumberjack_num in xrange(5):
             lumberjack = Lumberjack.Lumberjack(self, pygame.Surface((32, 32)))
-            lumberjack.location = vector2.Vector2(self.w, self.h)
+            lumberjack.location = vector2.Vector2(self.w/2, self.h/2)
             lumberjack.brain.set_state("Searching")
             self.add_entity(lumberjack)
             
         for farmer_num in xrange(5):
             farmer = Farmer.Farmer(self, pygame.Surface((32, 32)))
-            farmer.location = vector2.Vector2(self.w, self.h)
+            farmer.location = vector2.Vector2(self.w/2, self.h/2)
             farmer.brain.set_state("Planting")
             self.add_entity(farmer)
 
@@ -144,6 +144,9 @@ class World(object):
 
     def render(self, surface):
         surface.blit(self.world_surface, self.world_position)
+
+        for entity in self.entities.itervalues():
+            entity.render(surface)
 
     def render_all(self, surface, delta, mouse_pos):
         self.clipper.render(surface, delta, mouse_pos)

@@ -38,7 +38,7 @@ class GameEntity(object):
 
     def process(self, time_passed):
         self.brain.think()
-        self.world_location = self.location + self.world.background_pos
+        self.world_location = self.location + self.world.world_position
 
         if self.speed > 0. and self.location != self.destination:
             vec_to_destination = self.destination - self.location
