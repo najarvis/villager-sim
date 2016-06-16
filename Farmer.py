@@ -1,10 +1,10 @@
-from StateMachine import *
+from aitools.StateMachine import *
 from World import *
 from GameEntity import *
 
 from gametools.vector2 import Vector2
 from Entities import *
-from Image_funcs import *
+from gametools.ImageFuncs import *
 
 import random
 import math

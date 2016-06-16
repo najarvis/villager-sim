@@ -1,5 +1,5 @@
 from World import *
-from StateMachine import *
+from aitools.StateMachine import *
 from gametools.vector2 import *
 
 import pygame

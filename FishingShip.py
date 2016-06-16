@@ -1,7 +1,7 @@
 import GameEntity
-import StateMachine
+import aitools.StateMachine as StateMachine
 import math, random
-from vector2 import Vector2
+from gametools.vector2 import Vector2
 
 class FishingShip(GameEntity.GameEntity):
     

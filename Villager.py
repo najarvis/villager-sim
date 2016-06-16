@@ -1,4 +1,4 @@
-from StateMachine import *
+from aitools.StateMachine import *
 from World import *
 
 from GameEntity import *

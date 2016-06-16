@@ -16,7 +16,7 @@ from Farmer import *
 
 from Clips import Clips
 
-import GoalMachine
+import aitools.GoalMachine as GoalMachine
 
 from random import randint, seed
 from gametools.VoronoiMapGen import mapGen

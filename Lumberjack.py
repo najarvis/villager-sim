@@ -1,7 +1,7 @@
 from GameEntity import GameEntity
-from StateMachine import State
+from aitools.StateMachine import State
 from Tile import *
-from Image_funcs import *
+from gametools.ImageFuncs import *
 
 from random import randint
 import random
