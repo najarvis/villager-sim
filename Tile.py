@@ -13,6 +13,7 @@ class Tile(object):
         self.plantable = 0
         self.buildable = 0
         self.buildable_w = 0
+        self.darkness = 0
 
         self.id = 0
         self.rect = pygame.Rect((0, 0), self.img.get_size())

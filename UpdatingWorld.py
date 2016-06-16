@@ -116,7 +116,7 @@ class World(object):
                             (0, 0, 1, 1)), (tile_x, tile_y))
 
                 self.tile_array[tile_x][tile_y] = new_tile
-                
+        
         self.populate()
 
     def populate(self):
@@ -144,6 +144,9 @@ class World(object):
 
     def render(self, surface):
         surface.blit(self.world_surface, self.world_position)
+
+        for entity in self.entities.itervalues():
+            entity.render(surface)
 
     def render_all(self, surface, delta, mouse_pos):
         self.clipper.render(surface, delta, mouse_pos)

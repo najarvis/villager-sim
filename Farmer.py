@@ -5,7 +5,7 @@ from GameEntity import *
 from gametools.vector2 import Vector2
 from Entities import *
 from gametools.ImageFuncs import *
-from ani import *
+from gametools.ani import *
 import random
 import math
 
@@ -31,8 +31,8 @@ class Farmer(GameEntity):
 
         self.planted = 0
 
-        self.worldSize = world.size
-        self.TileSize = self.world.TileSize
+        self.worldSize = world.world_size
+        self.TileSize = self.world.tile_size
 
         self.animation = Ani(6,10)
         self.pic = pygame.image.load("Images/Entities/map.png")
@@ -61,43 +61,43 @@ class Farmer_Planting(State):
             self.farmer.update()
 
     def do_actions(self):
-        if self.farmer.location == self.farmer.destination and self.farmer.hit >= 4 and self.farmer.world.get_tile(
-                self.farmer.location).plantable == 1:
+        if self.farmer.location == self.farmer.destination and self.farmer.hit >= 4 and TileFuncs.get_tile(
+                self.farmer.world,self.farmer.location).plantable == 1:
             self.plant_seed()
-        if self.farmer.location == self.farmer.destination and self.farmer.hit != 4 and self.farmer.world.get_tile(
-                self.farmer.location).plantable != 1:
+        if self.farmer.location == self.farmer.destination and self.farmer.hit != 4 and TileFuncs.get_tile(
+                self.farmer.world, self.farmer.location).plantable != 1:
             self.random_dest()
 
     def plant_seed(self):
         # Function for planting trees
 
         # Test to see if the tile the farmer is on is a tile that a tree can be planted on
-        if self.farmer.world.get_tile(self.farmer.location).plantable == 1:
+        if TileFuncs.get_tile(self.farmer.world,self.farmer.location).plantable == 1:
             self.farmer.hit = 0
             self.farmer.update()
-            old_tile = self.farmer.world.get_tile(Vector2(self.farmer.location))
+            old_tile = TileFuncs.get_tile(self.farmer.world,Vector2(self.farmer.location))
 
             darkness = pygame.Surface((32, 32))
             darkness.set_alpha(old_tile.darkness)
 
-            new_tile = Baby_Tree(self.farmer.world, Tile_image)
+            new_tile = Baby_Tree(self.farmer.world, "GrassWithCenterTree")
 
             new_tile.darkness = old_tile.darkness
 
-            new_tile.location = self.farmer.world.get_tile_pos(self.farmer.destination)*32
+            new_tile.location = TileFuncs.get_tile_pos(self.farmer.world,self.farmer.destination)*32
             new_tile.rect.topleft = new_tile.location
             new_tile.color = old_tile.color
 
             # Give it an ID so it can be found
-            new_tile.id = self.farmer.world.Baby_TreeID
-            self.farmer.world.Baby_TreeID += 1
+            # new_tile.id = self.farmer.world.Baby_TreeID
+            # self.farmer.world.Baby_TreeID += 1
 
-            self.farmer.world.TileArray[int(new_tile.location.y/32)][int(new_tile.location.x/32)] = new_tile
-            self.farmer.world.full_surface.blit(new_tile.img, new_tile.location)
-            self.farmer.world.full_surface.blit(darkness, new_tile.location)
+            self.farmer.world.tile_array[int(new_tile.location.y/32)][int(new_tile.location.x/32)] = new_tile
+            self.farmer.world.world_surface.blit(new_tile.img, new_tile.location)
+            self.farmer.world.world_surface.blit(darkness, new_tile.location)
 
             # Add the location to a dictionary so villagers can see how far they are from it.
-            self.farmer.world.baby_tree_locations[str(self.farmer.world.Baby_TreeID)] = new_tile.location
+            # self.farmer.world.baby_tree_locations[str(self.farmer.world.Baby_TreeID)] = new_tile.location
 
         # Goes to a random destination no matter what
         self.farmer.hit = 0
@@ -112,13 +112,13 @@ class Farmer_Planting(State):
         angle = math.radians(self.farmer.orientation)
         distance = random.randint(50, 100)
         random_dest = (self.farmer.location.x + math.cos(angle) * distance, self.farmer.location.y + math.sin(angle) * distance)
-        if not self.farmer.world.get_tile(Vector2(*random_dest)).walkable:
-            try:
-                self.random_dest(True)
-            except RuntimeError:
-                pass
-                # TODO: This is trash, find a better solution
-                #print "SOMEONE IS DROWNING!!"
+        # if not self.farmer.world.get_tile(Vector2(*random_dest)).walkable:
+        #     try:
+        #         self.random_dest(True)
+        #     except RuntimeError:
+        #         pass
+        #         # TODO: This is trash, find a better solution
+        #         #print "SOMEONE IS DROWNING!!"
 
         self.farmer.destination = Vector2(*random_dest)
 

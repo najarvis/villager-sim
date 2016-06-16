@@ -1,10 +1,10 @@
 from GameEntity import GameEntity
 from aitools.StateMachine import State
 from Tile import *
+import TileFuncs
 from gametools.ImageFuncs import *
-
+from gametools.ani import *
 from random import randint
-from ani import *
 import random
 import math
 import pygame
@@ -27,8 +27,8 @@ class Lumberjack(GameEntity):
         self.brain.add_state(self.chopping_state)
         self.brain.add_state(self.delivering_state)
 
-        self.worldSize = world.size
-        self.TileSize = self.world.TileSize
+        self.worldSize = world.world_size
+        self.TileSize = self.world.tile_size
 
         self.animation = Ani(5,10)
         self.pic = pygame.image.load("Images/Entities/map.png")
@@ -66,10 +66,10 @@ class Searching(State):
 
     def check_conditions(self):
         if self.lumberjack.location.get_distance_to(self.lumberjack.destination) < 15:
-            location_array = self.lumberjack.world.get_vnn_array((self.lumberjack.location), self.lumberjack.view_range)
+            location_array = TileFuncs.get_vnn_array(self.lumberjack.world,(self.lumberjack.location), self.lumberjack.view_range)
 
             for location in location_array:
-                test_tile = self.lumberjack.world.get_tile(location)
+                test_tile = TileFuncs.get_tile(self.lumberjack.world,location)
                 if test_tile.name == "TreePlantedTile_W":
                     self.lumberjack.Tree_tile = test_tile
                     self.lumberjack.tree_id = test_tile.id
@@ -91,13 +91,13 @@ class Searching(State):
         angle = math.radians(self.lumberjack.orientation)
         distance = random.randint(25, 50)
         random_dest = (self.lumberjack.location.x + math.cos(angle) * distance, self.lumberjack.location.y + math.sin(angle) * distance)
-        if not self.lumberjack.world.get_tile(Vector2(*random_dest)).walkable:
-            try:
-                self.random_dest(True)
-            except RuntimeError:
-                pass
-                #TODO: Fix this, it is trash
-                #print "SOMEONE IS DROWNING!!"
+        # if not TileFuncs.get_tile(self.lumberjack.world,Vector2(*random_dest)).walkable:
+        #     try:
+        #         self.random_dest(True)
+        #     except RuntimeError:
+        #         pass
+        #         #TODO: Fix this, it is trash
+        #         #print "SOMEONE IS DROWNING!!"
                 
         self.lumberjack.destination = Vector2(*random_dest)
 
