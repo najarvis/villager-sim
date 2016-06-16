@@ -28,7 +28,9 @@ class World(object):
 
         self.clock = pygame.time.Clock()
 
-        self.map_generator = VoronoiMapGen.mapGen()
+        # Entities
+        self.entities = {}
+        self.entity_id = 0
 
         self.new_world(tile_dimensions)
         self.clipper = Clips.Clips(self, screen_size)
@@ -45,7 +47,8 @@ class World(object):
         """
 
         map_width, map_height = array_size
-        vor_map = self.map_generator.negative(self.map_generator.reallyCoolFull(array_size,
+        map_generator = VoronoiMapGen.mapGen()
+        vor_map = map_generator.negative(self.map_generator.reallyCoolFull(array_size,
                                                                                 num_p=23))
         self.minimap_img = pygame.Surface((map_width, map_height))
         self.tile_array = [[0 for tile_x in xrange(map_width)] for tile_y in xrange(map_height)]
@@ -112,8 +115,28 @@ class World(object):
 
                 self.tile_array[tile_x][tile_y] = new_tile
 
+    def populate(self):
+        
+        for lumberjack_num in xrange(5):
+            lumberjack = Lumberjack(self)
+            lumberjack.location = vector2.Vector2(self.w, self.h)
+            lumberjack.brain.set_state("Searching")
+            self.add_entity(lumberjack)
+            
+        for farmer_num in xrange(5):
+            farmer = Farmer(self)
+            farmer.location = vector2.Vector2(self.w, self.h)
+            farmer.brain.set_state("Planting")
+            self.add_entity(farmer)
+
+    def add_entity(self, entity):
+        self.entities[self.entity_id] = entity
+        entity.id = self.entity_id
+        self.entity_id += 1
+
     def process(self, delta):
-        pass
+        for entity in self.entities.values():
+            entity.process(delta)
 
     def render(self, surface):
         surface.blit(self.world_surface, self.world_position)
