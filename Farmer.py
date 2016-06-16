@@ -130,7 +130,10 @@ class Farmer_Planting(State):
             try:
                 self.random_dest(True)
             except RuntimeError:
-                print "SOMEONE IS DROWNING!!"
+                pass
+                # TODO: This is trash, find a better solution
+                #print "SOMEONE IS DROWNING!!"
+
         self.farmer.destination = Vector2(*random_dest)
 
     def entry_actions(self):

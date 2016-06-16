@@ -50,7 +50,9 @@ class Searching(StateMachine.State):
             try:
                 self.random_dest(True)
             except RuntimeError:
-                print "SOMEONE IS DROWNING!!"
+                pass
+                #TODO: Fix this, this is trash
+                #print "SOMEONE IS DROWNING!!"
                 
         self.fishing_ship.destination = Vector2(*random_dest)
     

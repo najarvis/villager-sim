@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 #-*- coding:utf-8 -*-
 
+"""VillagerSim, a project aimed at creating an artificial intelligence, capable of exploring an island"""
+
 import pygame
 
 pygame.init()
@@ -12,8 +14,9 @@ from Clips import Clips
 
 
 def run():
-    """Run the Game"""
-    tile_size = 32
+    """Simply runs the game."""
+    
+    
     font = pygame.font.SysFont("Terminal", 20)
     bool_full = False
     screen_size = (1280, 720)
@@ -27,6 +30,7 @@ def run():
     else:
         screen = pygame.display.set_mode(screen_size, 0, 32)
 
+    # For the selection
     draw = False
     held = False
 
@@ -41,13 +45,13 @@ def run():
     # TODO: Move these somewhere else
     placing_lumberyard_img = pygame.image.load("Images/Buildings/Dark_LumberYard.png").convert()
     placing_lumberyard_img.set_colorkey((255, 0, 255))
-    
+
     placing_house_img = pygame.image.load("Images/Buildings/Dark_House.png").convert()
     placing_house_img.set_colorkey((255, 0, 255))
-    
+
     placing_dock_img = pygame.image.load("Images/Buildings/Dark_Dock.png").convert()
     placing_dock_img.set_colorkey((255, 0, 255))
-    
+
     placing_manor_img = pygame.image.load("Images/Buildings/Dark_Manor.png").convert()
     placing_manor_img.set_colorkey((255, 0, 255))
 
@@ -63,7 +67,7 @@ def run():
     world.clock.tick()
     done = False
     while not done:
-        
+
         time_passed_seconds = world.clock.tick_busy_loop(60) / 1000.
         pos = Vector2(*pygame.mouse.get_pos())
 
@@ -131,29 +135,23 @@ def run():
                         pygame.image.save(world.clipper.minimap, "Images/Screenshots/MinimapSCREENSHOT%s.png" %str1)
                         
                     elif event.key == pygame.K_F4:
-                        pygame.image.save(world.background, "Images/Screenshots/FULL_MAP_RENDER%s.png" %str1)
+                        pygame.image.save(world.full_surface, "Images/Screenshots/FULL_MAP_RENDER%s.png" %str1)
                         
                 if event.key == pygame.K_n:
                     world.new_world()
 
                 if event.key == pygame.K_ESCAPE:
                     done = True
-
-            if event.type == pygame.VIDEORESIZE:
-                screen_width, screen_height = event.size
-
+ 
         # ------------------Keys Below--------------------------------------
         pressed_keys = pygame.key.get_pressed()
         if pressed_keys[pygame.K_ESCAPE]:  # quits the game
             done = True
 
-        if pressed_keys[pygame.K_SPACE]:  # Resets wood
-            world.wood = 0
-
         if pressed_keys[pygame.K_d]:  # Fast-forward function
             world.clock_degree += 5
 
-        # Test to see what the first entity'select_surface state is
+        # Test to see what the first entity's current state is
         if pressed_keys[pygame.K_l]:
             print world.entities[0].brain.active_state
 
@@ -164,7 +162,6 @@ def run():
             if not bool_full:
                 pygame.mouse.set_pos((15, pos.y))
             world.background_pos.x += 500 * time_passed_seconds
-            # print world.background_pos.x
             if world.background_pos.x > side_size:
                 world.background_pos.x = side_size
 
@@ -202,7 +199,6 @@ def run():
                     go to that location with the view centered on the event position"""
                 draw = False
                 if not held:
-                    # E712 comparison to True should be 'if cond is not True:' or 'if not cond:'
                     world.background_pos.x = (-1 * (pos.x - world.clipper.minimap_rect.x) * world.clipper.a) + (
                         world.clipper.rect_view_w * world.clipper.a) / 2
 
@@ -229,7 +225,7 @@ def run():
         screen.fill((0, 0, 0))
         world.render_all(screen, time_passed_seconds, pos)
 
-        world.grow_trees(world.baby_tree_locations)
+        #world.grow_trees(world.baby_tree_locations)
 
         if selected_building is not None:
             if (pos.x > world.clipper.minimap_rect.x and pos.y > world.clipper.minimap_rect.y) or (
@@ -242,10 +238,9 @@ def run():
                 screen.blit(selected_img, ((blit_pos.x - (selected_img.get_width() - 32)) + world.background_pos.x,
                                            (blit_pos.y - (selected_img.get_height() - 32)) + world.background_pos.y))
 
+        # ------------Render above----------------------------
         # This is for selecting-------------
         if draw and selected_building is None:
-            # E712 comparison to True should be 'if cond is True:' or 'if cond:'
-            # E711 comparison to None should be 'if cond is None:'
             current_mouse_pos = Vector2(*pygame.mouse.get_pos())
 
             lst = world.get_tile_array(start, ((current_mouse_pos.x - start.x) / 32, (current_mouse_pos.x - start.x) / 32))
@@ -278,7 +273,7 @@ def run():
         # --------------Render Above------------------------
 
         pygame.display.flip()
-        pygame.display.set_caption("VillagerSim! Have fun!")
+        pygame.display.set_caption("VillagerSim")
 
     pygame.quit()
 

@@ -107,7 +107,9 @@ class Searching(State):
             try:
                 self.random_dest(True)
             except RuntimeError:
-                print "SOMEONE IS DROWNING!!"
+                pass
+                #TODO: Fix this, it is trash
+                #print "SOMEONE IS DROWNING!!"
                 
         self.lumberjack.destination = Vector2(*random_dest)
 

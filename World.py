@@ -48,10 +48,10 @@ fishingship_img = pygame.image.load("Images/Entities/fishingship.png")
 class World(object):
     """This class holds and does everything basically."""
 
-    def __init__(self, world_dimensions, font, rand_seed, screen_size):
+    def __init__(self, world_dimensions, screen_size):
         
         """Seed the map"""
-        self.seed = rand_seed
+        self.seed = None
         if self.seed is not None:
             seed(self.seed)
             
@@ -69,7 +69,8 @@ class World(object):
         self.clock = pygame.time.Clock()
 
         """Set up the font the sidebar will use"""
-        self.font = font
+        pygame.font.init()
+        self.font = pygame.font.SysFont("Terminal", 20)
         self.font_size = self.font.size("A")[1]
 
         """Convert all those images"""
@@ -96,7 +97,7 @@ class World(object):
         
         """Set up a new world"""
         self.new_world()
-        self.cliper = Clips(self, screen_size)
+        self.clipper = Clips(self, screen_size)
 
     def new_world(self):
 
@@ -486,6 +487,8 @@ class World(object):
         for entity in self.entities.values():
             entity.process(time_passed)
 
+        self.grow_trees(self.baby_tree_locations)
+
     def render(self, surface):
         surface.blit(self.full_surface, self.background_pos)
 
@@ -495,7 +498,7 @@ class World(object):
         #surface.blit(self.background_over, (0, 0))
 
     def render_all(self, surface, tp, mouse_pos):
-        self.cliper.render(surface, tp, mouse_pos)
+        self.clipper.render(surface, tp, mouse_pos)
 
     def get_close_entity(self, name, location, range=100.):
 
