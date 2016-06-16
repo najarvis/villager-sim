@@ -4,10 +4,10 @@ from gametools.vector2 import Vector2
 
 
 class Tile(object):
-    def __init__(self, world, img):
+    def __init__(self, world, tile_name="NULL"):
         self.world = world
-        self.name = "BASETILE"
-        self.img = img
+        self.name = tile_name
+        self.img = pygame.image.load("Images/Tiles/"+tile_name+".png").convert()
         self.location = Vector2(0, 0)
         self.walkable = 0
         self.plantable = 0
@@ -22,91 +22,58 @@ class Tile(object):
 
 
 class GrassTile(Tile):
-    def __init__(self, world, img):
-        Tile.__init__(self, world, img)
-        self.walkable = 1
-        self.buildable = 1
-        self.name = "GrassTile"
-
-
-class WaterTile(Tile):
-    def __init__(self, world, img):
-        Tile.__init__(self, world, img)
-        self.buildable_w = 1
-        self.name = "WaterTile"
-
-
-class DeepWaterTile(Tile):
-    def __init__(self, world, img):
-        Tile.__init__(self, world, img)
-        self.name = "DeepWaterTile"
-        self.buildable_w = 1
-
-
-class SmoothStoneTile(Tile):
-    def __init__(self, world, img):
-        Tile.__init__(self, world, img)
-        self.walkable = 1
-        self.buildable = 1
-        self.name = "SmoothStoneTile"
-
-
-class CobblestoneTile(Tile):
-    def __init__(self, world, img):
-        Tile.__init__(self, world, img)
-        self.walkable = 1
-        self.buildable = 1
-        self.name = "CobblestoneTile"
-
-
-class DirtTile(Tile):
-    def __init__(self, world, img):
-        Tile.__init__(self, world, img)
-        self.walkable = 1
-        self.buildable = 1
-        self.name = "DirtTile"
-
-
-class BeachTile(Tile):
-    def __init__(self, world, img):
-        Tile.__init__(self, world, img)
-        self.walkable = 1
-        self.buildable = 1
-        self.name = "SandTile"
-
-
-class TreePlantedTile(Tile):
-    def __init__(self, world, img):
-        Tile.__init__(self, world, img)
-        self.name = "TreePlantedTile"
+    def __init__(self, world, tile_name):
+        Tile.__init__(self, world, tile_name)
         self.walkable = 1
         self.buildable = 1
         self.plantable = 1
 
+class WaterTile(Tile):
+    def __init__(self, world, tile_name):
+        Tile.__init__(self, world, tile_name)
+        self.buildable_w = 1
+
+class DeepWaterTile(Tile):
+    def __init__(self, world, tile_name):
+        Tile.__init__(self, world, tile_name)
+        self.buildable_w = 1
+
+class SmoothStoneTile(Tile):
+    def __init__(self, world, tile_name):
+        Tile.__init__(self, world, tile_name)
+        self.walkable = 1
+        self.buildable = 1
+
+class CobblestoneTile(Tile):
+    def __init__(self, world, tile_name):
+        Tile.__init__(self, world, tile_name)
+        self.walkable = 1
+        self.buildable = 1
+
+class DirtTile(Tile):
+    def __init__(self, world, tile_name):
+        Tile.__init__(self, world, tile_name)
+        self.walkable = 1
+        self.buildable = 1
+
+class BeachTile(Tile):
+    def __init__(self, world, tile_name):
+        Tile.__init__(self, world, tile_name)
+        self.walkable = 1
+        self.buildable = 1
 
 class Baby_Tree(Tile):
-    def __init__(self, world, img):
-        Tile.__init__(self, world, img)
-        self.name = "Baby_Tree"
+    def __init__(self, world, tile_name):
+        Tile.__init__(self, world, tile_name)
         self.walkable = 1
 
-
-class TreePlantedTile_w(Tile):
-    def __init__(self, world, img):
-        Tile.__init__(self, world, img)
-        self.name = "TreePlantedTile_W"
+class TreePlantedTile(Tile):
+    def __init__(self, world, tile_name):
+        Tile.__init__(self, world, tile_name)
         self.walkable = 1
         self.Taken = 0
 
-
 class SnowTile(Tile):
-    def __init__(self, world, img):
-        Tile.__init__(self, world, img)
-        self.name = "SnowTile"
-        
-        
-class NullTile(Tile):
-    
-    def __init__(self, world, img):
-        Tile.__init__(self, world, img)
-        self.name = "NULL"
+    def __init__(self, world, tile_name):
+        Tile.__init__(self, world, tile_name)
+

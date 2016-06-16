@@ -48,10 +48,10 @@ class Clips(object):
     def render(self, surface, tp, mouse_pos):
 
         self.rect_view_pos = (
-            (-1 * self.world.background_pos.x / self.a) +
+            (-1 * self.world.world_position.x / self.a) +
             self.size[0] - self.minimap_size[0] +
             ((self.size[0] / 5) / self.a),
-            (-1 * self.world.background_pos.y / self.b) + self.size[1] - self.minimap_size[1])
+            (-1 * self.world.world_position.y / self.b) + self.size[1] - self.minimap_size[1])
 
         self.rect_view = (
             self.rect_view_pos,
@@ -65,11 +65,11 @@ class Clips(object):
         #         surface.blit(self.world.frame_text, (520,2))
 
         surface.set_clip((0, 0, self.size[0] / 5.0, self.size[1]))
-        self.side.render(surface, mouse_pos, tp)
+        #self.side.render(surface, mouse_pos, tp)
 
         surface.set_clip((self.size[0] / 5.0, 0, self.size[0], self.size[1]))
         self.world.render(surface)
-        self.update_dial(surface, tp)
+        #self.update_dial(surface, tp)
 
         surface.set_clip(self.minimap_rect)
         pygame.draw.rect(
@@ -112,6 +112,7 @@ class sidebar(object):
     def __init__(self, world, size):
         self.world = world
 
+        """
         self.wood = self.world.wood
         self.MAXwood = self.world.MAXwood
 
@@ -120,6 +121,7 @@ class sidebar(object):
 
         self.population = self.world.population
         self.MAXpop = self.world.MAXpopulation
+        """
 
         self.Lgray = (200, 200, 200)
         self.Dgray = (160, 160, 160)
@@ -175,10 +177,10 @@ class sidebar(object):
         try:
             height = "HEIGHT: " + \
                 str(self.world.get_tile(
-                    mouse_pos - self.world.background_pos).color)
+                    mouse_pos - self.world.world_position).color)
             name = "NAME: " + \
                 str(self.world.get_tile(
-                    mouse_pos - self.world.background_pos).name)
+                    mouse_pos - self.world.world_position).name)
         except IndexError:
             height = "NULL"
             name = "NULL"

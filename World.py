@@ -94,7 +94,7 @@ class World(object):
         self.build_house_action = GoalMachine.Action("build house", {"shelter":-1})
         self.build_dock_action = GoalMachine.Action("build dock", {"food":-1})
         self.spawn_fishing_ship_action = GoalMachine.Action("spawn fishing ship", {"food":-1})
-        
+
         """Set up a new world"""
         self.new_world()
         self.clipper = Clips(self, screen_size)

@@ -3,7 +3,7 @@
 
 import pygame
 import gametools.vector2
-import World
+import UpdatingWorld as World
 
 def run(fullscreen):
     """The main function to run the program.
@@ -58,11 +58,11 @@ def run(fullscreen):
 
                 x_temp_1 = -game_world.clipper.a * (pos.x - game_world.clipper.minimap_rect.x)
                 x_temp_2 = game_world.clipper.rect_view_w * game_world.clipper.a
-                game_world.background_pos.x = x_temp_1 + (x_temp_2 / 2)
+                game_world.world_position.x = x_temp_1 + (x_temp_2 / 2)
 
                 y_temp_1 = -game_world.clipper.b * (pos.y - game_world.clipper.minimap_rect.y)
                 y_temp_2 = game_world.clipper.rect_view_h * game_world.clipper.b
-                game_world.background_pos.y = y_temp_1 + (y_temp_2 / 2)
+                game_world.world_position.y = y_temp_1 + (y_temp_2 / 2)
 
         # Process everything in the game world
         game_world.process(time_passed_seconds)
