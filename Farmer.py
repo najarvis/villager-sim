@@ -10,9 +10,7 @@ import random
 import math
 
 import pygame
-
-Tile_image = pygame.image.load("Images/Tiles/baby_tree.png")
-
+import TileFuncs
 
 class Farmer(GameEntity):
     def __init__(self, world, image):
@@ -80,7 +78,7 @@ class Farmer_Planting(State):
             darkness = pygame.Surface((32, 32))
             darkness.set_alpha(old_tile.darkness)
 
-            new_tile = Baby_Tree(self.farmer.world, "GrassWithCenterTree")
+            new_tile = Tile.Baby_Tree(self.farmer.world, "GrassWithCenterTree")
 
             new_tile.darkness = old_tile.darkness
 

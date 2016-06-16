@@ -3,7 +3,7 @@
 
 import pygame
 import gametools.vector2
-import UpdatingWorld as World
+import World
 
 def run(fullscreen):
     """The main function to run the program.
