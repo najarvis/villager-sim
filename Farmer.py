@@ -5,7 +5,7 @@ from GameEntity import *
 from gametools.vector2 import Vector2
 from Entities import *
 from gametools.ImageFuncs import *
-
+from ani import *
 import random
 import math
 
@@ -17,7 +17,7 @@ Tile_image = pygame.image.load("Images/Tiles/baby_tree.png")
 class Farmer(GameEntity):
     def __init__(self, world, image):
         GameEntity.__init__(self, world, "Farmer", image)
-        img_func = image_funcs(18, 17)
+
 
         planting_state = Farmer_Planting(self)
         #         exploring_state = Farmer_Exploring(self)
@@ -34,31 +34,19 @@ class Farmer(GameEntity):
         self.worldSize = world.size
         self.TileSize = self.world.TileSize
 
-        self.row = 0
-        self.times = 6
+        self.animation = Ani(6,10)
         self.pic = pygame.image.load("Images/Entities/map.png")
-        self.cells = img_func.get_list(self.pic)
-        self.ani = img_func.get_images(self.cells, self.times, 1, 1, 1, self.row, self.pic)
-        self.start = img_func.get_image(self.cells, 1, 1, 0, self.row, self.pic)
-        self.num = 0
-        self.img = self.ani[0]
-        self.num_max = len(self.ani)-1
-        self.ani_speed_init = 10
-        self.ani_speed = self.ani_speed_init
-        self.update()
+        self.img_func = ImageFuncs(18, 17,self.pic)
+        self.sprites = self.img_func.get_images(6,0,0)
         self.hit = 0
+        self.update()
 
     def update(self):
-        self.ani_speed -= 1
-        if self.ani_speed == 0:
-            self.image = self.ani[self.num]
-            self.image.set_colorkey((255, 0, 255))
-            self.ani_speed = self.ani_speed_init
-            if self.num == self.num_max:
-                self.num = 0
-                self.hit += 1
-            else:
-                self.num += 1
+        self.image = self.sprites[self.animation.get_frame()]
+        self.image.set_colorkey((255,0,255))
+        if self.animation.finished == True:
+            self.hit += 1
+            self.animation.finished = False
 
 
 class Farmer_Planting(State):
@@ -73,7 +61,7 @@ class Farmer_Planting(State):
             self.farmer.update()
 
     def do_actions(self):
-        if self.farmer.location == self.farmer.destination and self.farmer.hit == 4 and self.farmer.world.get_tile(
+        if self.farmer.location == self.farmer.destination and self.farmer.hit >= 4 and self.farmer.world.get_tile(
                 self.farmer.location).plantable == 1:
             self.plant_seed()
         if self.farmer.location == self.farmer.destination and self.farmer.hit != 4 and self.farmer.world.get_tile(
@@ -86,9 +74,7 @@ class Farmer_Planting(State):
         # Test to see if the tile the farmer is on is a tile that a tree can be planted on
         if self.farmer.world.get_tile(self.farmer.location).plantable == 1:
             self.farmer.hit = 0
-            self.farmer.image = self.farmer.start
-            self.farmer.image.set_colorkey((255, 0, 255))
-
+            self.farmer.update()
             old_tile = self.farmer.world.get_tile(Vector2(self.farmer.location))
 
             darkness = pygame.Surface((32, 32))
