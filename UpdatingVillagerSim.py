@@ -34,7 +34,7 @@ def run(fullscreen):
     while not done:
 
         # Cap the game at 60 fps
-        time_passed_seconds = game_world.clock.tick_loop(60) / 1000.0
+        time_passed_seconds = game_world.clock.tick(60) / 1000.0
         pos = gametools.vector2.Vector2(*pygame.mouse.get_pos())
 
         for event in pygame.event.get():
