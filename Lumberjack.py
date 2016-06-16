@@ -4,6 +4,7 @@ from Tile import *
 from gametools.ImageFuncs import *
 
 from random import randint
+from ani import *
 import random
 import math
 import pygame
@@ -14,7 +15,6 @@ NoTreeImg = pygame.image.load("Images/Tiles/MinecraftGrass.png")
 class Lumberjack(GameEntity):
     def __init__(self, world, img):
         GameEntity.__init__(self, world, "Lumberjack", img)
-        img_func = image_funcs(18, 17)
 
         self.speed = 100.
         self.view_range = 6
@@ -30,31 +30,19 @@ class Lumberjack(GameEntity):
         self.worldSize = world.size
         self.TileSize = self.world.TileSize
 
-        self.row = 1
-        self.times = 3
+        self.animation = Ani(5,10)
         self.pic = pygame.image.load("Images/Entities/map.png")
-        self.cells = img_func.get_list(self.pic)
-        self.ani = img_func.get_images(self.cells, self.times, 1, 1, 1, self.row, self.pic)
-        self.start = img_func.get_image(self.cells, 1, 1, 0, self.row, self.pic)
-        self.num = 0
-        self.num_max = len(self.ani)-1
-        self.ani_speed_init = 10
-        self.ani_speed = self.ani_speed_init
-        self.img = self.ani[0]
-        self.update()
+        self.img_func = ImageFuncs(18, 17,self.pic)
+        self.sprites = self.img_func.get_images(5,0,1)
         self.hit = 0
+        self.update()
 
     def update(self):
-        self.ani_speed -= 1
-        if self.ani_speed == 0:
-            self.image = self.ani[self.num]
-            self.image.set_colorkey((255, 0, 255))
-            self.ani_speed = self.ani_speed_init
-            if self.num == self.num_max:
-                self.num = 0
-                self.hit += 1
-            else:
-                self.num += 1
+        self.image = self.sprites[self.animation.get_frame()]
+        self.image.set_colorkey((255,0,255))
+        if self.animation.finished == True:
+            self.hit += 1
+            self.animation.finished = False
 
 
 class Searching(State):
@@ -132,17 +120,14 @@ class Chopping(State):
 
             if check.name != "TreePlantedTile_W":
                 self.lumberjack.hit = 0
-                self.lumberjack.num = 0
-                self.lumberjack.image = self.lumberjack.start
-                self.lumberjack.ani_speed = self.lumberjack.ani_speed_init
+                self.lumberjack.update()
                 return "Searching"
 
             self.lumberjack.update()
 
-            if self.lumberjack.hit == 4:
+            if self.lumberjack.hit >= 4:
                 self.lumberjack.destination = Vector2(self.lumberjack.location)
-                self.lumberjack.image = self.lumberjack.start
-                self.lumberjack.image.set_colorkey((255, 0, 255))
+                self.lumberjack.update()
 
                 old_tile = self.lumberjack.world.get_tile(Vector2(self.lumberjack.location))
 
