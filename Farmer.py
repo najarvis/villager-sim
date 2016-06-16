@@ -5,7 +5,7 @@ from GameEntity import *
 from gametools.vector2 import Vector2
 from Entities import *
 from gametools.ImageFuncs import *
-from ani import *
+from gametools.ani import *
 import random
 import math
 

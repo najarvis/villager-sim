@@ -3,9 +3,8 @@ from aitools.StateMachine import State
 from Tile import *
 import TileFuncs
 from gametools.ImageFuncs import *
-
+from gametools.ani import *
 from random import randint
-from ani import *
 import random
 import math
 import pygame
