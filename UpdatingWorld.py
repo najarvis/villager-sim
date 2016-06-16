@@ -2,6 +2,8 @@ import pygame
 from gametools import vector2, VoronoiMapGen
 import Tile
 import Clips
+import Farmer
+import Lumberjack
 
 class World(object):
     """This class holds everything in the game. It also
@@ -48,7 +50,7 @@ class World(object):
 
         map_width, map_height = array_size
         map_generator = VoronoiMapGen.mapGen()
-        vor_map = map_generator.negative(self.map_generator.reallyCoolFull(array_size,
+        vor_map = map_generator.negative(map_generator.reallyCoolFull(array_size,
                                                                                 num_p=23))
         self.minimap_img = pygame.Surface((map_width, map_height))
         self.tile_array = [[0 for tile_x in xrange(map_width)] for tile_y in xrange(map_height)]
@@ -115,16 +117,18 @@ class World(object):
 
                 self.tile_array[tile_x][tile_y] = new_tile
 
+                self.populate()
+
     def populate(self):
         
         for lumberjack_num in xrange(5):
-            lumberjack = Lumberjack(self)
+            lumberjack = Lumberjack.Lumberjack(self, pygame.Surface((32, 32)))
             lumberjack.location = vector2.Vector2(self.w, self.h)
             lumberjack.brain.set_state("Searching")
             self.add_entity(lumberjack)
             
         for farmer_num in xrange(5):
-            farmer = Farmer(self)
+            farmer = Farmer.Farmer(self, pygame.Surface((32, 32)))
             farmer.location = vector2.Vector2(self.w, self.h)
             farmer.brain.set_state("Planting")
             self.add_entity(farmer)
