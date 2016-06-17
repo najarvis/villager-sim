@@ -99,7 +99,8 @@ class World(object):
                 alph = 220 - color
                 if 220 > color >= 190:
                     alph = 330 - color
-
+                new_tile.darkness = alph
+                
                 subtle_shadow = pygame.Surface((self.tile_size, self.tile_size))
                 subtle_shadow.set_alpha(alph)
 
