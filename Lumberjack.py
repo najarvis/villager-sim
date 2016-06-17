@@ -4,6 +4,7 @@ from GameEntity import *
 from gametools.vector2 import Vector2
 from gametools.ImageFuncs import *
 from gametools.ani import *
+import Tile
 import math
 import pygame
 import random
@@ -76,7 +77,7 @@ class Searching(State):
 
             for location in location_array:
                 test_tile = TileFuncs.get_tile(self.lumberjack.world,location)
-                if test_tile.name == "TreePlantedTile_W":
+                if test_tile.name == "GrassWithCenterTree":
                     self.lumberjack.Tree_tile = test_tile
                     self.lumberjack.tree_id = test_tile.id
 
@@ -120,11 +121,11 @@ class Chopping(State):
         pass
 
     def check_conditions(self):
-        check = self.lumberjack.world.get_tile(Vector2(self.lumberjack.location))
+        check = TileFuncs.get_tile(self.lumberjack.world,Vector2(self.lumberjack.location))
         if self.lumberjack.location.get_distance_to(self.lumberjack.destination) < 15:
             self.lumberjack.destination = Vector2(self.lumberjack.location)
 
-            if check.name != "TreePlantedTile_W":
+            if check.name != "GrassWithCenterTree":
                 self.lumberjack.hit = 0
                 self.lumberjack.update()
                 return "Searching"
@@ -135,22 +136,22 @@ class Chopping(State):
                 self.lumberjack.destination = Vector2(self.lumberjack.location)
                 self.lumberjack.update()
 
-                old_tile = self.lumberjack.world.get_tile(Vector2(self.lumberjack.location))
+                old_tile = TileFuncs.get_tile(self.lumberjack.world,Vector2(self.lumberjack.location))
 
                 darkness = pygame.Surface((32, 32))
                 darkness.set_alpha(old_tile.darkness)
 
-                new_tile = TreePlantedTile(self.lumberjack.world, NoTreeImg)
+                new_tile = Tile.TreePlantedTile(self.lumberjack.world, "MinecraftGrass")
 
                 new_tile.darkness = old_tile.darkness
 
-                new_tile.location = self.lumberjack.world.get_tile_pos(self.lumberjack.destination)*32
+                new_tile.location = TileFuncs.get_tile_pos(self.lumberjack.world,self.lumberjack.destination)*32
                 new_tile.rect.topleft = new_tile.location
                 new_tile.color = old_tile.color
 
-                self.lumberjack.world.TileArray[int(new_tile.location.y/32)][int(new_tile.location.x/32)] = new_tile
-                self.lumberjack.world.full_surface.blit(new_tile.img, new_tile.location)
-                self.lumberjack.world.full_surface.blit(darkness, new_tile.location)
+                self.lumberjack.world.tile_array[int(new_tile.location.y/32)][int(new_tile.location.x/32)] = new_tile
+                self.lumberjack.world.world_surface.blit(new_tile.img, new_tile.location)
+                self.lumberjack.world.world_surface.blit(darkness, new_tile.location)
 
                 self.lumberjack.hit = 0
 
@@ -171,16 +172,7 @@ class Delivering(State):
         self.lumberjack = Lumberjack
 
     def entry_actions(self):
-
-        des = self.lumberjack.world.get_close_entity("LumberYard", self.lumberjack.location, 100)
-        if des == None:
-            des = self.lumberjack.world.get_close_entity("LumberYard", self.lumberjack.location, 300)
-            if des == None:
-                des = self.lumberjack.LastLumberYard
-
-        self.lumberjack.LastLumberYard = des
-
-        self.lumberjack.destination = des.location.copy()
+        self.lumberjack.destination = Vector2(self.lumberjack.world.w/2,self.lumberjack.world.h/2)
 
     def do_actions(self):
         pass
