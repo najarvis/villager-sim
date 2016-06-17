@@ -1,37 +1,34 @@
 from aitools.StateMachine import *
-from World import *
-from GameEntity import *
-
-from gametools.vector2 import Vector2
 from Entities import *
+from GameEntity import *
+from gametools.vector2 import Vector2
 from gametools.ImageFuncs import *
 from gametools.ani import *
-import random
 import math
-
 import pygame
+import random
 import TileFuncs
+from World import *
 
 class Farmer(GameEntity):
+
     def __init__(self, world, image):
+        # Initializing the class
         GameEntity.__init__(self, world, "Farmer", image)
 
-
+        # Creating the states
         planting_state = Farmer_Planting(self)
-        #         exploring_state = Farmer_Exploring(self)
 
+        # Adding states to the brain
         self.brain.add_state(planting_state)
-        #         self.brain.add_state(exploring_state)
 
-
-        self.speed = 80
-        self.max_speed = self.speed
-
-        self.planted = 0
+        self.max_speed = 80
+        self.speed = self.max_speed
 
         self.worldSize = world.world_size
         self.TileSize = self.world.tile_size
 
+        # animation variables
         self.animation = Ani(6,10)
         self.pic = pygame.image.load("Images/Entities/map.png")
         self.img_func = ImageFuncs(18, 17,self.pic)
@@ -40,6 +37,7 @@ class Farmer(GameEntity):
         self.update()
 
     def update(self):
+        # Updates image every 10 cycles and adds 1 to the 4 hit dig
         self.image = self.sprites[self.animation.get_frame()]
         self.image.set_colorkey((255,0,255))
         if self.animation.finished == True:
@@ -48,20 +46,24 @@ class Farmer(GameEntity):
 
 
 class Farmer_Planting(State):
+
     def __init__(self, Farmer):
 
         State.__init__(self, "Planting")
         self.farmer = Farmer
 
     def check_conditions(self):
+
         if self.farmer.location.get_distance_to(self.farmer.destination) < 15:
             self.farmer.destination = Vector2(self.farmer.location)
             self.farmer.update()
 
     def do_actions(self):
+
         if self.farmer.location == self.farmer.destination and self.farmer.hit >= 4 and TileFuncs.get_tile(
                 self.farmer.world,self.farmer.location).plantable == 1:
             self.plant_seed()
+
         if self.farmer.location == self.farmer.destination and self.farmer.hit != 4 and TileFuncs.get_tile(
                 self.farmer.world, self.farmer.location).plantable != 1:
             self.random_dest()
@@ -86,16 +88,9 @@ class Farmer_Planting(State):
             new_tile.rect.topleft = new_tile.location
             new_tile.color = old_tile.color
 
-            # Give it an ID so it can be found
-            # new_tile.id = self.farmer.world.Baby_TreeID
-            # self.farmer.world.Baby_TreeID += 1
-
             self.farmer.world.tile_array[int(new_tile.location.y/32)][int(new_tile.location.x/32)] = new_tile
             self.farmer.world.world_surface.blit(new_tile.img, new_tile.location)
             self.farmer.world.world_surface.blit(darkness, new_tile.location)
-
-            # Add the location to a dictionary so villagers can see how far they are from it.
-            # self.farmer.world.baby_tree_locations[str(self.farmer.world.Baby_TreeID)] = new_tile.location
 
         # Goes to a random destination no matter what
         self.farmer.hit = 0

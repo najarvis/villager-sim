@@ -1,28 +1,32 @@
-from GameEntity import GameEntity
-from aitools.StateMachine import State
-from Tile import *
-import TileFuncs
+from aitools.StateMachine import *
+from Entities import *
+from GameEntity import *
+from gametools.vector2 import Vector2
 from gametools.ImageFuncs import *
 from gametools.ani import *
-from random import randint
-import random
 import math
 import pygame
+import random
+import TileFuncs
+from World import *
 
 NoTreeImg = pygame.image.load("Images/Tiles/MinecraftGrass.png")
 
-
 class Lumberjack(GameEntity):
+
     def __init__(self, world, img):
+        # Initializing the class
         GameEntity.__init__(self, world, "Lumberjack", img)
 
         self.speed = 100.
         self.view_range = 6
 
+        # Creating the states
         self.searching_state = Searching(self)
         self.chopping_state = Chopping(self)
         self.delivering_state = Delivering(self)
 
+        # Adding states to the brain
         self.brain.add_state(self.searching_state)
         self.brain.add_state(self.chopping_state)
         self.brain.add_state(self.delivering_state)
@@ -30,6 +34,7 @@ class Lumberjack(GameEntity):
         self.worldSize = world.world_size
         self.TileSize = self.world.tile_size
 
+        # animation variables
         self.animation = Ani(5,10)
         self.pic = pygame.image.load("Images/Entities/map.png")
         self.img_func = ImageFuncs(18, 17,self.pic)
@@ -38,6 +43,7 @@ class Lumberjack(GameEntity):
         self.update()
 
     def update(self):
+        # Updates image every 10 cycles and adds 1 to the 4 hit dig
         self.image = self.sprites[self.animation.get_frame()]
         self.image.set_colorkey((255,0,255))
         if self.animation.finished == True:
