@@ -10,6 +10,7 @@ class Tile(object):
         self.img = pygame.image.load("Images/Tiles/"+tile_name+".png").convert()
         self.location = Vector2(0, 0)
         self.walkable = 0
+        self.fishable = 0
         self.plantable = 0
         self.buildable = 0
         self.buildable_w = 0
@@ -33,6 +34,7 @@ class WaterTile(Tile):
     def __init__(self, world, tile_name):
         Tile.__init__(self, world, tile_name)
         self.buildable_w = 1
+        self.fishable = 1
 
 class DeepWaterTile(Tile):
     def __init__(self, world, tile_name):

@@ -4,6 +4,7 @@ import Tile
 import Clips
 import Farmer
 import Lumberjack
+import Angler
 
 class World(object):
     """This class holds everything in the game. It also
@@ -29,6 +30,8 @@ class World(object):
         self.world_position = vector2.Vector2(-self.w / 2, -self.h / 2)
 
         self.clock = pygame.time.Clock()
+        self.wood = 0
+        self.fish = 0
 
         # Entities
         self.entities = {}
@@ -139,6 +142,12 @@ class World(object):
             lumberjack.location = vector2.Vector2(self.w / 2, self.h / 2)
             lumberjack.brain.set_state("Searching")
             self.add_entity(lumberjack)
+
+        for angler_num in xrange(5):
+            angler = Angler.Angler(self, pygame.Surface((32, 32)))
+            angler.location = vector2.Vector2(self.w / 2, self.h / 2)
+            angler.brain.set_state("Searching")
+            self.add_entity(angler)
             
         for farmer_num in xrange(5):
             farmer = Farmer.Farmer(self, pygame.Surface((32, 32)))
