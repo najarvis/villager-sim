@@ -4,6 +4,7 @@
 import pygame
 import gametools.vector2
 import World
+import sys
 
 def run(fullscreen):
     """The main function to run the program.
@@ -24,7 +25,7 @@ def run(fullscreen):
     else:
         screen = pygame.display.set_mode(screen_size, 0)
 
-    game_world = World.World((128, 128), screen_size)
+    game_world = World.World((64, 64), screen_size)
 
     pygame.display.set_caption("Villager Sim")
 
@@ -78,4 +79,7 @@ def run(fullscreen):
     pygame.quit()
 
 if __name__ == "__main__":
-    run(False)
+    try:
+        run(bool(int(sys.argv[1])))
+    except Exception:
+        run(False)

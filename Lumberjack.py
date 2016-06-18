@@ -92,11 +92,11 @@ class Searching(State):
     def random_dest(self, recurse=False, r_num=0, r_max=5):
         # Function for going to a random destination
         if recurse:
-            self.lumberjack.orientation += 20
+            self.lumberjack.orientation += 90
         else:
-            self.lumberjack.orientation += random.randint(-20, 20)
+            self.lumberjack.orientation += random.randint(-1, 1) * 90
         angle = math.radians(self.lumberjack.orientation)
-        distance = random.randint(25, 50)
+        distance = random.randint(1, 3) * 32
         random_dest = Vector2(self.lumberjack.location.x + math.cos(angle) * distance, self.lumberjack.location.y + math.sin(angle) * distance)
         
         # If the destination will go off the map, it is NOT a valid move under any circumstances.
