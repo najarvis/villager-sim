@@ -44,5 +44,5 @@ class GameEntity(object):
             vec_to_destination = self.destination - self.location
             distance_to_destination = vec_to_destination.get_length()
             heading = vec_to_destination.get_normalized()
-            travel_distance = min(distance_to_destination, time_passed * self.speed)
-            self.location += travel_distance * heading * time_passed * self.speed
+            travel_distance = min(distance_to_destination, self.speed)
+            self.location += travel_distance * heading * self.speed

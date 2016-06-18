@@ -64,10 +64,10 @@ class Clips(object):
         #         surface.blit(self.world.pop_text, (360,2))
         #         surface.blit(self.world.frame_text, (520,2))
 
-        surface.set_clip((0, 0, self.size[0] / 5.0, self.size[1]))
+        #surface.set_clip((0, 0, self.size[0] / 5.0, self.size[1]))
         #self.side.render(surface, mouse_pos, tp)
 
-        surface.set_clip((self.size[0] / 5.0, 0, self.size[0], self.size[1]))
+        #surface.set_clip((self.size[0] / 5.0, 0, self.size[0], self.size[1]))
         self.world.render(surface)
         #self.update_dial(surface, tp)
 

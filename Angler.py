@@ -12,9 +12,9 @@ from World import *
 
 class Angler(GameEntity):
 
-    def __init__(self, world, image):
+    def __init__(self, world, image_string):
         # Initializing the class
-        GameEntity.__init__(self, world, "Angler", image)
+        GameEntity.__init__(self, world, "Angler", "Entities/"+image_string)
 
         # Creating the states
         fishing_state = Fishing(self)
@@ -26,7 +26,7 @@ class Angler(GameEntity):
         self.brain.add_state(exploring_state)
         self.brain.add_state(delivering_state)
 
-        self.max_speed = 80
+        self.max_speed = 80.0 * (1.0 / 60.0)
         self.speed = self.max_speed
         self.view_range = 1
         self.fish = 0
@@ -74,7 +74,7 @@ class Fishing(State):
             self.angler.fish = 1
 
 
-    def random_dest(self, recurse=False):
+    def random_dest(self, recurse=False, r_num=0, r_max=5):
         # Function for going to a random destination
         if recurse:
             self.angler.orientation += 20
@@ -82,16 +82,18 @@ class Fishing(State):
             self.angler.orientation += random.randint(-20, 20)
         angle = math.radians(self.angler.orientation)
         distance = random.randint(50, 100)
-        random_dest = (self.angler.location.x + math.cos(angle) * distance, self.angler.location.y + math.sin(angle) * distance)
-        # if not self.angler.world.get_tile(Vector2(*random_dest)).walkable:
-        #     try:
-        #         self.random_dest(True)
-        #     except RuntimeError:
-        #         pass
-        #         # TODO: This is trash, find a better solution
-        #         #print "SOMEONE IS DROWNING!!"
+        random_dest = Vector2(self.angler.location.x + math.cos(angle) * distance, self.angler.location.y + math.sin(angle) * distance)        
+        
+        # If the destination will go off the map, it is NOT a valid move under any circumstances.
+        bad_spot = False
+        if (0 > random_dest.x > self.angler.world.world_size[0] or \
+            0 > random_dest.y > self.angler.world.world_size[1]):
+            bad_spot = True
 
-        self.angler.destination = Vector2(*random_dest)
+        if ((not TileFuncs.get_tile(self.angler.world, random_dest).walkable and r_num < r_max) or bad_spot):
+            self.random_dest(True, r_num+1)
+        
+        self.angler.destination = random_dest
 
     def entry_actions(self):
         self.random_dest()

@@ -15,11 +15,11 @@ NoTreeImg = pygame.image.load("Images/Tiles/MinecraftGrass.png")
 
 class Lumberjack(GameEntity):
 
-    def __init__(self, world, img):
+    def __init__(self, world, image_string):
         # Initializing the class
-        GameEntity.__init__(self, world, "Lumberjack", img)
+        GameEntity.__init__(self, world, "Lumberjack", "Entities/"+image_string)
 
-        self.speed = 100.
+        self.speed = 100.0 * (1.0 / 60.0)
         self.view_range = 6
 
         # Creating the states
@@ -89,7 +89,7 @@ class Searching(State):
     def exit_actions(self):
         pass
 
-    def random_dest(self, recurse=False):
+    def random_dest(self, recurse=False, r_num=0, r_max=5):
         # Function for going to a random destination
         if recurse:
             self.lumberjack.orientation += 20
@@ -97,16 +97,18 @@ class Searching(State):
             self.lumberjack.orientation += random.randint(-20, 20)
         angle = math.radians(self.lumberjack.orientation)
         distance = random.randint(25, 50)
-        random_dest = (self.lumberjack.location.x + math.cos(angle) * distance, self.lumberjack.location.y + math.sin(angle) * distance)
-        # if not TileFuncs.get_tile(self.lumberjack.world,Vector2(*random_dest)).walkable:
-        #     try:
-        #         self.random_dest(True)
-        #     except RuntimeError:
-        #         pass
-        #         #TODO: Fix this, it is trash
-        #         #print "SOMEONE IS DROWNING!!"
-                
-        self.lumberjack.destination = Vector2(*random_dest)
+        random_dest = Vector2(self.lumberjack.location.x + math.cos(angle) * distance, self.lumberjack.location.y + math.sin(angle) * distance)
+        
+        # If the destination will go off the map, it is NOT a valid move under any circumstances.
+        bad_spot = False
+        if (0 > random_dest.x > self.lumberjack.world.world_size[0] or \
+            0 > random_dest.y > self.lumberjack.world.world_size[1]):
+            bad_spot = True
+
+        if ((not TileFuncs.get_tile(self.lumberjack.world, random_dest).walkable and r_num < r_max) or bad_spot):
+            self.random_dest(True, r_num+1)
+               
+        self.lumberjack.destination = random_dest
 
 
 class Chopping(State):

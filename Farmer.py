@@ -12,9 +12,9 @@ from World import *
 
 class Farmer(GameEntity):
 
-    def __init__(self, world, image):
+    def __init__(self, world, image_string):
         # Initializing the class
-        GameEntity.__init__(self, world, "Farmer", image)
+        GameEntity.__init__(self, world, "Farmer", "Entities/"+image_string)
 
         # Creating the states
         planting_state = Farmer_Planting(self)
@@ -22,7 +22,7 @@ class Farmer(GameEntity):
         # Adding states to the brain
         self.brain.add_state(planting_state)
 
-        self.max_speed = 80
+        self.max_speed = 80.0 * (1.0 / 60.0)
         self.speed = self.max_speed
 
         self.worldSize = world.world_size
@@ -96,7 +96,7 @@ class Farmer_Planting(State):
         self.farmer.hit = 0
         self.random_dest()
 
-    def random_dest(self, recurse=False):
+    def random_dest(self, recurse=False, r_num=0, r_max=5):
         # Function for going to a random destination
         if recurse:
             self.farmer.orientation += 20
@@ -104,16 +104,18 @@ class Farmer_Planting(State):
             self.farmer.orientation += random.randint(-20, 20)
         angle = math.radians(self.farmer.orientation)
         distance = random.randint(50, 100)
-        random_dest = (self.farmer.location.x + math.cos(angle) * distance, self.farmer.location.y + math.sin(angle) * distance)
-        # if not self.farmer.world.get_tile(Vector2(*random_dest)).walkable:
-        #     try:
-        #         self.random_dest(True)
-        #     except RuntimeError:
-        #         pass
-        #         # TODO: This is trash, find a better solution
-        #         #print "SOMEONE IS DROWNING!!"
+        random_dest = Vector2(self.farmer.location.x + math.cos(angle) * distance, self.farmer.location.y + math.sin(angle) * distance)
+         
+         # If the destination will go off the map, it is NOT a valid move under any circumstances.
+        bad_spot = False
+        if (0 > random_dest.x > self.farmer.world.world_size[0] or \
+            0 > random_dest.y > self.farmer.world.world_size[1]):
+            bad_spot = True
 
-        self.farmer.destination = Vector2(*random_dest)
+        if ((not TileFuncs.get_tile(self.farmer.world, random_dest).walkable and r_num < r_max) or bad_spot):
+            self.random_dest(True, r_num+1)
+       
+        self.farmer.destination = random_dest
 
     def entry_actions(self):
         self.random_dest()
