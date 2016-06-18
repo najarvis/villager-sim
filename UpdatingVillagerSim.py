@@ -51,6 +51,13 @@ def run(fullscreen):
                 if event.key == pygame.K_ESCAPE:
                     done = True
 
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                if event.button == 3:
+                    entity = TileFuncs.get_entity(game_world,pos)
+                    if entity != None:
+                        # print entity[1].name
+                        entity[1].active_info = not entity[1].active_info
+
         if pygame.mouse.get_pressed()[0]:
 
             # This code moves the view to where the user is clicking in
@@ -75,11 +82,12 @@ def run(fullscreen):
         # Clear the screen, then draw the world onto it
         screen.fill((0, 0, 0))
         game_world.render_all(screen, time_passed_seconds, pos)
-        if pygame.mouse.get_pressed()[2]:
-            entity = TileFuncs.get_entity(game_world,pos)
-            if entity != None:
-                # print entity[1].name
-                game_world.render_info_bar(screen,entity[1].world_location)
+        # if pygame.mouse.get_pressed()[2]:
+        #     entity = TileFuncs.get_entity(game_world,pos)
+        #     if entity != None:
+        #         # print entity[1].name
+        #         entity[1].active_info = not entity[1].active_info
+        #         # game_world.render_info_bar(screen,entity[1])
 
         # Update the screen
         pygame.display.update()

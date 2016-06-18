@@ -23,6 +23,10 @@ class GameEntity(object):
         self.world_location = Vector2(0, 0)
         self.destination = Vector2(0, 0)
         self.speed = 0.
+        self.food = 70
+        self.water = 70
+        self.energy = 70
+        self.active_info = False
 
         self.brain = StateMachine()
 
