@@ -32,7 +32,9 @@ class World(object):
 
         # Entities
         self.entities = {}
+        self.buildings = {}
         self.entity_id = 0
+        self.building_id = 0
 
         self.new_world(tile_dimensions)
         self.clipper = Clips.Clips(self, screen_size)
@@ -158,6 +160,16 @@ class World(object):
         self.entities[self.entity_id] = entity
         entity.id = self.entity_id
         self.entity_id += 1
+
+    def add_building(self, building):
+        self.buildings[self.building_id] = building
+        building.id = self.building_id
+        self.building_id += 1
+
+        for tile_x in xrange(building.image.get_width()):
+            for tile_y in xrange(building.image.get_height()):
+                self.tile_array[building.location.y + tile_y][building.location.x + tile_x] = Tile.BuildingTile(self, "MinecraftGrass")
+        self.world_surface.blit(building.image, building.location * self.tile_size)
 
     def process(self, delta):
         """Runs through each entity and runs their process function.

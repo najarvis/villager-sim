@@ -7,12 +7,12 @@ from pygame.locals import *
 
 
 class GameEntity(object):
-    def __init__(self, world, name, image):
+    def __init__(self, world, name, image_string):
 
         self.world = world
         self.name = name
 
-        self.image = image
+        self.image = pygame.image.load("Images/"+image_string+".png")
         self.orientation = 0
         
         try:

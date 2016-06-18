@@ -3,7 +3,7 @@ from World import *
 from GameEntity import *
 from gametools.vector2 import Vector2
 
-from Building import *
+from Buildings import *
 
 from random import *
 

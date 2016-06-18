@@ -16,9 +16,10 @@ def run(fullscreen):
         None
     """
 
+    pygame.init()
     screen_size = (1280, 720)
     if fullscreen:
-        screen = pygame.display.set_mode(screen_size,
+        screen = pygame.display.set_mode(pygame.display.list_modes()[0],
                 pygame.FULLSCREEN | pygame.HWSURFACE)
     else:
         screen = pygame.display.set_mode(screen_size, 0)

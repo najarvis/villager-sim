@@ -1,19 +1,17 @@
 from aitools.StateMachine import *
-from World import *
-from GameEntity import *
+import GameEntity
 from gametools.vector2 import Vector2
 import glob
-import FishingShip
 
-from random import *
-
+import ImageFuncs
 import pygame
 
 
-class Building(GameEntity):
-    def __init(self, world, name, img):
-        GameEntity.__init__(self, world, name, img)
+class Building(GameEntity.GameEntity):
+    def __init(self, world, name, image_string="Inn"):
+        GameEntity.__init__(self, world, name, "Buildings/"+image_string)
 
+        self.image_funcs = ImageFuncs(32, 32, pygame.image.load("Images/Buildings/TotalImage.png"))
         self.tile_x, self.tile_y = pos
         self.cost = 100
         get_images(name)
@@ -23,10 +21,10 @@ class Building(GameEntity):
 
 
 class LumberYard(Building):
-    def __init__(self, world, img):
-        name = "LumberYard"
-        Building.__init__(self, world, name, img)
+    def __init__(self, world, image_string="LumberYard"):
+        Building.__init__(self, world, "Lumber Yard", image_string)
 
+        self.image = self.image_funcs.get_irregular_image(2, 2, 2, 2)
         self.Held = 0
         self.HeldMax = 50
         self.cost = 100
@@ -37,9 +35,10 @@ class LumberYard(Building):
 
 class Dock(Building):
     
-    def __init__(self, world, img):
-        name = "Dock"
-        Building.__init__(self, world, name, img)
+    def __init__(self, world, image_string="Dock"):
+        Building.__init__(self, world, "Dock", image_string)
+
+        self.image = self.image_funcs.get_irregular_image(2, 2, 2, 0)
 
         self.Held = 0
         self.HeldMax = 25
@@ -49,17 +48,9 @@ class Dock(Building):
 
         self.world.MAXfood += self.HeldMax
         
-        new_ship = FishingShip.FishingShip(self.world, self.world.fishingship_img)
-        new_ship.location = self.location.copy()
-        new_ship.brain.set_state("Searching")
-        self.world.add_entity(new_ship)
-        self.world.population += 1
-
-
 class House(Building):
-    def __init__(self, world, img):
-        name = "House"
-        Building.__init__(self, world, name, img)
+    def __init__(self, world, image_string="House"):
+        Building.__init__(self, world, "House", image_string)
 
         self.supports = 5
         self.cost = 30
@@ -68,9 +59,10 @@ class House(Building):
 
 
 class Manor(Building):
-    def __init__(self, world, img):
-        name = "Manor"
-        Building.__init__(self, world, name, img)
+    def __init__(self, world, image_string="Manor"):
+        Building.__init__(self, world, "Manor", image_string)
+
+        self.image = self.image_funcs.get_irregular_image(2, 2, 2, 4)
 
         self.supports = 15
         self.cost = 100
@@ -78,9 +70,11 @@ class Manor(Building):
         self.world.MAXpopulation += self.supports
         
 class TownCenter(Building):
-    def __init__(self, world, img):
-        Building.__init__(self, world, "Town Center", img)
-        
+    def __init__(self, world, image_string="Manor"):
+        Building.__init__(self, world, "Town Center", image_string)
+       
+        self.image = self.image_funcs.get_irregular_image(2, 2, 2, 6)
+
         self.can_drop_food = True
         self.can_drop_wood = True
         
@@ -93,9 +87,8 @@ class TownCenter(Building):
 
 
 class UnderConstruction(Building):
-    def __init__(self, world, img, will_be):
-        name = "UC"
-        Building.__init__(self, world, name, img)
+    def __init__(self, world, image_string, will_be):
+        Building.__init__(self, world, "Under Construction", image_string)
         self.will_be = will_be
         self.ttb = 30.0
         self.max_ttb = 30.0
@@ -103,3 +96,9 @@ class UnderConstruction(Building):
     def create(self):
         self.world.add_built(self.will_be, self.location)
         self.world.remove_entity(self)
+
+
+class StoreShed(Building):
+
+    def __init__(self, world, image_string):
+        Building.__init__(self, world, "Store Shed", image_string)

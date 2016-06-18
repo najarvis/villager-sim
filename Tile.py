@@ -78,3 +78,8 @@ class SnowTile(Tile):
     def __init__(self, world, tile_name):
         Tile.__init__(self, world, tile_name)
 
+
+class BuildingTile(Tile):
+    def __init__(self, world, tile_name):
+        Tile.__init__(self, world, tile_name)
+        self.walkable = 1
