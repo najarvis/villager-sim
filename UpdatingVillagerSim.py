@@ -3,6 +3,7 @@
 
 import pygame
 import gametools.vector2
+import TileFuncs
 import World
 
 def run(fullscreen):
@@ -65,12 +66,20 @@ def run(fullscreen):
                 y_temp_2 = game_world.clipper.rect_view_h * game_world.clipper.b
                 game_world.world_position.y = y_temp_1 + (y_temp_2 / 2)
 
+
+
+
         # Process everything in the game world
         game_world.process(time_passed_seconds)
 
         # Clear the screen, then draw the world onto it
         screen.fill((0, 0, 0))
         game_world.render_all(screen, time_passed_seconds, pos)
+        if pygame.mouse.get_pressed()[2]:
+            entity = TileFuncs.get_entity(game_world,pos)
+            if entity != None:
+                # print entity[1].name
+                game_world.render_info_bar(screen,entity[1].world_location)
 
         # Update the screen
         pygame.display.update()

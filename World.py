@@ -41,6 +41,8 @@ class World(object):
 
         self.new_world(tile_dimensions)
         self.clipper = Clips.Clips(self, screen_size)
+        self.info_bar = pygame.image.load("Images/Entities/info_bar.png").convert()
+        self.info_bar.set_colorkey((255,0,255))
 
     def new_world(self, array_size):
         """Creates a new world (including all of the entities)
@@ -224,4 +226,9 @@ class World(object):
             None
         """
         self.clipper.render(surface, delta, mouse_pos)
+
+
+    def render_info_bar(self,surface,location):
+        surface.blit(self.info_bar,(location.x +10,location.y - 20))
+
 

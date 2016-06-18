@@ -11,10 +11,17 @@ def get_tile(world, location):
 def get_tile_pos(world, location):
     return vector2.Vector2(int(location.x) >> 5, int(location.y) >> 5)
 
+def get_entity(world,location, radius = 20):
+    for i in world.entities.items():
+        ent_location = i[1].world_location
+        if ((ent_location.x - location.x)**2 + (ent_location.y - location.y)**2) < radius**2:
+            return i
+    # print "no ents"
+
 def get_tile_array(world, start_pos, dimensions):
     dimensions = (int(dimensions[0]), int(dimensions[1]))
 
-    start_tile = get_tile_pos(start_pos)
+    start_tile = get_tile_pos(world,start_pos)
 
     array = [[None for i in xrange((dimensions[0] * 2) + 1)]
              for a in xrange((dimensions[1] * 2) + 1)]
@@ -26,7 +33,7 @@ def get_tile_array(world, start_pos, dimensions):
 
             else:
                 try:
-                    array[a][i] = world.TileArray[int((start_tile.y + a) - 1)][int((start_tile.x + i) - 1)]
+                    array[a][i] = world.tile_array[int((start_tile.y + a) - 1)][int((start_tile.x + i) - 1)]
                 except IndexError:
                     print a, i, start_tile
                     raise IndexError

@@ -67,11 +67,12 @@ class Fishing(State):
             return "Delivering"
 
     def do_actions(self):
-
-        if self.angler.location == self.angler.destination and self.angler.hit >= 4 and TileFuncs.get_tile(
-                self.angler.world,self.angler.location).fishable == 1:
-            self.angler.hit = 0
-            self.angler.fish = 1
+        if self.angler.location == self.angler.destination and self.angler.hit >= 4:
+            for i in TileFuncs.get_tile_array(self.angler.world,self.angler.location,(1,1)):
+                for g in i:
+                    if g.fishable == 1:
+                        self.angler.hit = 0
+                        self.angler.fish = 1
 
 
     def random_dest(self, recurse=False, r_num=0, r_max=5):
