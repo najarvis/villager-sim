@@ -127,24 +127,26 @@ class Searching(State):
     def exit_actions(self):
         pass
 
-    def random_dest(self, recurse=False):
+    def random_dest(self, recurse=False, r_num=0, r_max=5):
         # Function for going to a random destination
         if recurse:
             self.angler.orientation += 20
         else:
             self.angler.orientation += random.randint(-20, 20)
         angle = math.radians(self.angler.orientation)
-        distance = random.randint(25, 50)
-        random_dest = (self.angler.location.x + math.cos(angle) * distance, self.angler.location.y + math.sin(angle) * distance)
-        # if not TileFuncs.get_tile(self.angler.world,Vector2(*random_dest)).walkable:
-        #     try:
-        #         self.random_dest(True)
-        #     except RuntimeError:
-        #         pass
-        #         #TODO: Fix this, it is trash
-        #         #print "SOMEONE IS DROWNING!!"
+        distance = random.randint(50, 100)
+        random_dest = Vector2(self.angler.location.x + math.cos(angle) * distance, self.angler.location.y + math.sin(angle) * distance)        
+        
+        # If the destination will go off the map, it is NOT a valid move under any circumstances.
+        bad_spot = False
+        if (0 > random_dest.x > self.angler.world.world_size[0] or \
+            0 > random_dest.y > self.angler.world.world_size[1]):
+            bad_spot = True
 
-        self.angler.destination = Vector2(*random_dest)
+        if ((not TileFuncs.get_tile(self.angler.world, random_dest).walkable and r_num < r_max) or bad_spot):
+            self.random_dest(True, r_num+1, r_max)
+        
+        self.angler.destination = random_dest
 
 
 class Delivering(State):

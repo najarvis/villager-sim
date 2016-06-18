@@ -106,7 +106,7 @@ class Searching(State):
             bad_spot = True
 
         if ((not TileFuncs.get_tile(self.lumberjack.world, random_dest).walkable and r_num < r_max) or bad_spot):
-            self.random_dest(True, r_num+1)
+            self.random_dest(True, r_num+1, r_max)
                
         self.lumberjack.destination = random_dest
 

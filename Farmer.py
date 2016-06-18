@@ -113,7 +113,7 @@ class Farmer_Planting(State):
             bad_spot = True
 
         if ((not TileFuncs.get_tile(self.farmer.world, random_dest).walkable and r_num < r_max) or bad_spot):
-            self.random_dest(True, r_num+1)
+            self.random_dest(True, r_num+1, r_max)
        
         self.farmer.destination = random_dest
 
