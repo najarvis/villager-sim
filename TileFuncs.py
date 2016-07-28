@@ -1,6 +1,7 @@
 from gametools import vector2
 import Tile
 import math
+
 def get_tile(world, location):
     tile = get_tile_pos(world, location)
     try:
@@ -41,9 +42,22 @@ def get_tile_array(world, start_pos, dimensions):
 
 def get_vnn_array(world, location, r):
     """ Stands for Von Neumann Neighborhood.
-        Simply returns a neighborhood based
+        Simply returns a neighborhood of locations based
         on the initial location and range r"""
+
+    # I have no idea how this works. I wrote it on a whiteboard.
+    # That whiteboard now contains college courses.
     return_array = []
+
+    """
+    range: 3
+    num rows: 5 (number of rows is equal to (2 * r) - 1
+    0     *      1     left column is row_number  
+    1   * * *    3     right column is num_in_row
+    2 * * * * *  5
+    3   * * *    3     middle is illustration of what is looks like
+    4     *      1     num_in_row is just how many spots are looked at in the current row.
+    """
     for row_number in range((2 * r) - 1):
         if row_number >= r:
             num_in_row = (2 * row_number) - (4 * (row_number - r + 1) - 1)

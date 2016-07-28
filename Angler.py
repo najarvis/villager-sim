@@ -59,7 +59,7 @@ class Fishing(State):
 
     def check_conditions(self):
 
-        if self.angler.location.get_distance_to(self.angler.destination) < 15:
+        if self.angler.location.get_distance_to(self.angler.destination) < self.angler.max_speed:
             self.angler.destination = Vector2(self.angler.location)
             self.angler.update()
 
@@ -68,11 +68,10 @@ class Fishing(State):
 
     def do_actions(self):
         if self.angler.location == self.angler.destination and self.angler.hit >= 4:
-            for i in TileFuncs.get_tile_array(self.angler.world,self.angler.location,(1,1)):
-                for g in i:
-                    if g.fishable == 1:
-                        self.angler.hit = 0
-                        self.angler.fish = 1
+            for tile_location in TileFuncs.get_vnn_array(self.angler.world, self.angler.location, 2):
+                if TileFuncs.get_tile(self.angler.world, tile_location).fishable:
+                    self.angler.hit = 0
+                    self.angler.fish = 1
 
 
     def random_dest(self, recurse=False, r_num=0, r_max=5):
@@ -113,12 +112,12 @@ class Searching(State):
         pass
 
     def check_conditions(self):
-        if self.angler.location.get_distance_to(self.angler.destination) < 15:
-            location_array = TileFuncs.get_vnn_array(self.angler.world,(self.angler.location), self.angler.view_range)
+        if self.angler.location.get_distance_to(self.angler.destination) < self.angler.max_speed:
+            location_array = TileFuncs.get_vnn_array(self.angler.world, self.angler.location, self.angler.view_range)
 
             for location in location_array:
-                test_tile = TileFuncs.get_tile(self.angler.world,location)
-                if test_tile.name == "AndrewWater":
+                test_tile = TileFuncs.get_tile(self.angler.world, location)
+                if test_tile.__class__.__name__ == "WaterTile":
 
                     self.angler.destination = location.copy()
                     return "Fishing"
@@ -128,26 +127,28 @@ class Searching(State):
     def exit_actions(self):
         pass
 
-    def random_dest(self, recurse=False, r_num=0, r_max=5):
+    def random_dest(self, recurse=False, r_num=0, r_max=9):
         # Function for going to a random destination
         if recurse:
+            # if this was called from another random_dest function.
             self.angler.orientation += 20
         else:
             self.angler.orientation += random.randint(-20, 20)
+
         angle = math.radians(self.angler.orientation)
         distance = random.randint(50, 100)
-        random_dest = Vector2(self.angler.location.x + math.cos(angle) * distance, self.angler.location.y + math.sin(angle) * distance)        
+        possible_destination = Vector2(self.angler.location.x + math.cos(angle) * distance, self.angler.location.y + math.sin(angle) * distance)        
         
         # If the destination will go off the map, it is NOT a valid move under any circumstances.
         bad_spot = False
-        if (0 > random_dest.x > self.angler.world.world_size[0] or \
-            0 > random_dest.y > self.angler.world.world_size[1]):
+        if (0 > possible_destination.x > self.angler.world.world_size[0] or
+            0 > possible_destination.y > self.angler.world.world_size[1]):
             bad_spot = True
 
         if ((not TileFuncs.get_tile(self.angler.world, random_dest).walkable and r_num < r_max) or bad_spot):
             self.random_dest(True, r_num+1, r_max)
         
-        self.angler.destination = random_dest
+        self.angler.destination = possible_destination.copy()
 
 
 class Delivering(State):
