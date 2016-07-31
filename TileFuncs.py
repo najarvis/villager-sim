@@ -45,8 +45,6 @@ def get_vnn_array(world, location, r):
         Simply returns a neighborhood of locations based
         on the initial location and range r"""
 
-    # I have no idea how this works. I wrote it on a whiteboard.
-    # That whiteboard now contains college courses.
     return_array = []
 
     """
@@ -58,6 +56,7 @@ def get_vnn_array(world, location, r):
     3   * * *    3     middle is illustration of what is looks like
     4     *      1     num_in_row is just how many spots are looked at in the current row.
     """
+
     for row_number in range((2 * r) - 1):
         if row_number >= r:
             num_in_row = (2 * row_number) - (4 * (row_number - r + 1) - 1)
@@ -66,7 +65,22 @@ def get_vnn_array(world, location, r):
 
         for cell in range(num_in_row):
 
-            new_location = (location.x + (cell - math.floor(num_in_row / 2.0)), location.y + (row_number - (r - 1)))
-            return_array.append(vector2.Vector2(*new_location))
+            """
+            the y_offset goes from -(r - 1) to +(r - 1) (not affected by the inner loop)
+
+            the x_offset goes from -math.floor(num_in_row / 2.0) to +math.floor(num_in_row / 2.0) 
+
+            0     0     1 |                  (0, -2)                  x, y offset pairs of a range 3 vnn array        
+            1   0 1 2   3 |         (-1, -1) (0, -1) (1, -1)         
+            2 0 1 2 3 4 5 | (-2, 0) (-1, 0 ) (0, 0 ) (1, 0 ) (2, 0)   left column is row_number
+            3   0 1 2   3 |         (-1, 1 ) (0, 1 ) (1, 1 )          right column is num_in_row
+            4     0     1 |                  (0, 2 )                  middle is cell number
+            """
+
+            x_offset = cell - math.floor(num_in_row / 2.0)
+            y_offset = row_number - (r - 1)
+
+            new_location = vector2.Vector2(location.x + x_offset, location.y + y_offset)
+            return_array.append(new_location)
 
     return return_array
