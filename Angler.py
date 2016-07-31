@@ -145,7 +145,7 @@ class Searching(State):
             0 > possible_destination.y > self.angler.world.world_size[1]):
             bad_spot = True
 
-        if ((not TileFuncs.get_tile(self.angler.world, random_dest).walkable and r_num < r_max) or bad_spot):
+        if ((not TileFuncs.get_tile(self.angler.world, possible_destination).walkable and r_num < r_max) or bad_spot):
             self.random_dest(True, r_num+1, r_max)
         
         self.angler.destination = possible_destination.copy()
