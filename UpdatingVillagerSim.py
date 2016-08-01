@@ -6,6 +6,7 @@ import pygame
 import gametools.vector2
 import TileFuncs
 import World
+import DebugTools
 
 def run(fullscreen):
     """The main function to run the program.
@@ -92,7 +93,10 @@ def run(fullscreen):
             game_world.process(time_passed_seconds)
 
 	    tile_list = TileFuncs.get_vnn_array(game_world, game_world.entities[0].location, 2)
-	    print TileFuncs.get_tile(game_world, tile_list[0]), TileFuncs.get_tile(game_world, tile_list[4])
+	    # DebugTools.print_surrounding_tiles(game_world)
+	    # DebugTools.print_surrounding_tiles(game_world, "Location")
+            
+            # print TileFuncs.get_tile(game_world, tile_list[0]), TileFuncs.get_tile(game_world, tile_list[4])
 
         # Clear the screen, then draw the world onto it
         screen.fill((0, 0, 0))

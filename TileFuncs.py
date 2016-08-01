@@ -77,10 +77,11 @@ def get_vnn_array(world, location, r):
             4     0     1 |                  (0, 2 )                  middle is cell number
             """
 
+            tile_size = world.tile_size
             x_offset = cell - math.floor(num_in_row / 2.0)
             y_offset = row_number - (r - 1)
 
-            new_location = vector2.Vector2(location.x + x_offset, location.y + y_offset)
+            new_location = vector2.Vector2(location.x + (x_offset * tile_size), location.y + (y_offset * tile_size))
             return_array.append(new_location)
 
     return return_array
