@@ -147,19 +147,19 @@ class World(object):
         Returns:
             None"""
 
-        for lumberjack_num in xrange(0):
+        for lumberjack_num in xrange(3):
             lumberjack = Lumberjack.Lumberjack(self, "Lumberjack")
             lumberjack.location = vector2.Vector2(self.w / 2, self.h / 2)
             lumberjack.brain.set_state("Searching")
             self.add_entity(lumberjack)
 
-        for angler_num in xrange(1):
+        for angler_num in xrange(3):
             angler = Angler.Angler(self, "UsainBolt") # In case you are wondering, there is no 'Angler.png' image. Don't shoot me.
             angler.location = vector2.Vector2(self.w / 2, self.h / 2)
             angler.brain.set_state("Searching")
             self.add_entity(angler)
 
-        for farmer_num in xrange(0):
+        for farmer_num in xrange(3):
             farmer = Farmer.Farmer(self, "Farmer")
             farmer.location = vector2.Vector2(self.w / 2, self.h / 2)
             farmer.brain.set_state("Planting")

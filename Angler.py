@@ -115,6 +115,8 @@ class Searching(State):
         if self.angler.location.get_distance_to(self.angler.destination) < self.angler.max_speed:
             location_array = TileFuncs.get_vnn_array(self.angler.world, self.angler.location, self.angler.view_range)
 
+            #TODO(Jarvis): Currently this makes the angler go directly into the water. Have this make the Angler go to nearest shore.
+
             for location in location_array:
                 test_tile = TileFuncs.get_tile(self.angler.world, location)
                 if test_tile.__class__.__name__ == "WaterTile":
@@ -128,6 +130,8 @@ class Searching(State):
         pass
 
     def random_dest(self, recurse=False, r_num=0, r_max=9):
+        #TODO(Either): Make this into an 'aitools' function, where all entities can access the same version of the function.
+
         # Function for going to a random destination
         if recurse:
             # if this was called from another random_dest function.
