@@ -97,5 +97,5 @@ class Farmer_Planting(State):
         self.farmer.hit = 0
         BaseFunctions.random_dest(self.farmer)
 
-def entry_actions(self):
-        self.random_dest()
+    def entry_actions(self):
+        BaseFunctions.random_dest(self.farmer)

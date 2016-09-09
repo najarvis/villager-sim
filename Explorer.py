@@ -1,7 +1,9 @@
 """The explorer is a villager driven to the find the amazing by thier
 unwaivering curiosity for what is unknown. These will seek new land
 and features to help advance the civilization, though may at times
-pursure knowledge at other costs."""
+pursure knowledge at other costs.
+
+Also this class was primarily developed to track down movement bugs."""
 
 import aitools.StateMachine
 

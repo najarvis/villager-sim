@@ -23,7 +23,7 @@ def random_dest(entity, recurse=False, r_num=0, r_max=6):
         if DEBUG:
             "BAD SPOT IS TRUE"
 
-    walk = TileFuncs.get_tile(entity.world, possible_dest).walkable
+    walk = TileFuncs.get_tile(entity.world, possible_dest).walkable == entity.land_based
     depth_max = r_num >= r_max
 
     if ((not walk and not depth_max) or bad_spot):

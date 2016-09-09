@@ -7,6 +7,10 @@ import Lumberjack
 import Angler
 import Explorer
 
+# TODO: Fog Of War - Make the world image covered in black, and the ai slowly reveals it.
+#     the tiles should have a 'hidden' attribute. Would be cool because the person watching
+#     the simulation wouldn't know what the final image looked like either.
+
 class World(object):
     """This class holds everything in the game. It also
     updates and renders it all each frame."""
@@ -147,6 +151,8 @@ class World(object):
 
         Returns:
             None"""
+
+        # TODO: Finds a suitible spot for a town center, rather than just the center of the screen.
 
         num_lumber = 4
         num_angler = 2
