@@ -80,14 +80,7 @@ def run(fullscreen):
                 y_temp_2 = game_world.clipper.rect_view_h * game_world.clipper.b
                 game_world.world_position.y = y_temp_1 + (y_temp_2 / 2)
 	
-	# if pygame.mouse.get_pressed()[2]:
-		#     entity = TileFuncs.get_entity(game_world,pos)
-		#     if entity != None:
-		#         # print entity[1].name
-		#         entity[1].active_info = not entity[1].active_info
-		#         # game_world.render_info_bar(screen,entity[1])
-
-	# Process everything in the game world
+	    # Process everything in the game world
 
 	if not pause:
             game_world.process(time_passed_seconds)

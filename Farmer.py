@@ -9,6 +9,7 @@ import pygame
 import random
 import TileFuncs
 from World import *
+import BaseFunctions
 
 class Farmer(GameEntity):
 
@@ -66,7 +67,7 @@ class Farmer_Planting(State):
 
         if self.farmer.location == self.farmer.destination and self.farmer.hit != 4 and TileFuncs.get_tile(
                 self.farmer.world, self.farmer.location).plantable != 1:
-            self.random_dest()
+            BaseFunctions.random_dest(self.farmer)
 
     def plant_seed(self):
         # Function for planting trees
@@ -94,28 +95,7 @@ class Farmer_Planting(State):
 
         # Goes to a random destination no matter what
         self.farmer.hit = 0
-        self.random_dest()
+        BaseFunctions.random_dest(self.farmer)
 
-    def random_dest(self, recurse=False, r_num=0, r_max=5):
-        # Function for going to a random destination
-        if recurse:
-            self.farmer.orientation += 20
-        else:
-            self.farmer.orientation += random.randint(-20, 20)
-        angle = math.radians(self.farmer.orientation)
-        distance = random.randint(50, 100)
-        random_dest = Vector2(self.farmer.location.x + math.cos(angle) * distance, self.farmer.location.y + math.sin(angle) * distance)
-         
-         # If the destination will go off the map, it is NOT a valid move under any circumstances.
-        bad_spot = False
-        if (0 > random_dest.x > self.farmer.world.world_size[0] or \
-            0 > random_dest.y > self.farmer.world.world_size[1]):
-            bad_spot = True
-
-        if ((not TileFuncs.get_tile(self.farmer.world, random_dest).walkable and r_num < r_max) or bad_spot):
-            self.random_dest(True, r_num+1, r_max)
-       
-        self.farmer.destination = random_dest
-
-    def entry_actions(self):
+def entry_actions(self):
         self.random_dest()

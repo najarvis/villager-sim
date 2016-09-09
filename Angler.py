@@ -4,11 +4,13 @@ from GameEntity import *
 from gametools.vector2 import Vector2
 from gametools.ImageFuncs import *
 from gametools.ani import *
+import BaseFunctions
 import math
 import pygame
 import random
 import TileFuncs
 from World import *
+#TODO: Clean up imports and add docstrings
 
 class Angler(GameEntity):
 
@@ -45,7 +47,7 @@ class Angler(GameEntity):
     def update(self):
         self.image = self.sprites[self.animation.get_frame()]
         self.image.set_colorkey((255,0,255))
-        if self.animation.finished == True:
+        if self.animation.finished:
             self.hit += 1
             self.animation.finished = False
 
@@ -59,7 +61,7 @@ class Fishing(State):
 
     def check_conditions(self):
 
-        if self.angler.location.get_distance_to(self.angler.destination) < self.angler.max_speed:
+        if self.angler.location.get_distance_to(self.angler.destination) <= self.angler.max_speed:
             self.angler.destination = Vector2(self.angler.location)
             self.angler.update()
 
@@ -68,35 +70,15 @@ class Fishing(State):
 
     def do_actions(self):
         if self.angler.location == self.angler.destination and self.angler.hit >= 4:
+            # TODO: Why is this checking if the tile is fishable if it has been fishing there?
+            
             for tile_location in TileFuncs.get_vnn_array(self.angler.world, self.angler.location, 2):
                 if TileFuncs.get_tile(self.angler.world, tile_location).fishable:
                     self.angler.hit = 0
                     self.angler.fish = 1
 
-
-    def random_dest(self, recurse=False, r_num=0, r_max=5):
-        # Function for going to a random destination
-        if recurse:
-            self.angler.orientation += 20
-        else:
-            self.angler.orientation += random.randint(-20, 20)
-        angle = math.radians(self.angler.orientation)
-        distance = random.randint(50, 100)
-        random_dest = Vector2(self.angler.location.x + math.cos(angle) * distance, self.angler.location.y + math.sin(angle) * distance)        
-        
-        # If the destination will go off the map, it is NOT a valid move under any circumstances.
-        bad_spot = False
-        if (0 > random_dest.x > self.angler.world.world_size[0] or \
-            0 > random_dest.y > self.angler.world.world_size[1]):
-            bad_spot = True
-
-        if ((not TileFuncs.get_tile(self.angler.world, random_dest).walkable and r_num < r_max) or bad_spot):
-            self.random_dest(True, r_num+1)
-        
-        self.angler.destination = random_dest
-
     def entry_actions(self):
-        self.random_dest()
+        BaseFunctions.random_dest(self.angler)
 
 
 class Searching(State):
@@ -106,54 +88,27 @@ class Searching(State):
         self.angler = angler
 
     def entry_actions(self):
-        self.random_dest()
+        BaseFunctions.random_dest(self.angler)
 
     def do_actions(self):
         pass
 
     def check_conditions(self):
         if self.angler.location.get_distance_to(self.angler.destination) < self.angler.max_speed:
-            location_array = TileFuncs.get_vnn_array(self.angler.world, self.angler.location, self.angler.view_range)
-
-            #TODO(Jarvis): Currently this makes the angler go directly into the water. Have this make the Angler go to nearest shore.
+            location_array = TileFuncs.get_vnn_array(self.angler.world,(self.angler.location), self.angler.view_range)
 
             for location in location_array:
+                # TODO: This will make the angler go into the water, change this to go to the nearest walkable tile.
                 test_tile = TileFuncs.get_tile(self.angler.world, location)
                 if test_tile.__class__.__name__ == "WaterTile":
 
                     self.angler.destination = location.copy()
                     return "Fishing"
 
-            self.random_dest()
+            BaseFunctions.random_dest(self.angler)
 
     def exit_actions(self):
         pass
-
-    def random_dest(self, recurse=False, r_num=0, r_max=9):
-        #TODO(Either): Make this into an 'aitools' function, where all entities can access the same version of the function.
-
-        # Function for going to a random destination
-        if recurse:
-            # if this was called from another random_dest function.
-            self.angler.orientation += 20
-        else:
-            self.angler.orientation += random.randint(-20, 20)
-
-        angle = math.radians(self.angler.orientation)
-        distance = random.randint(50, 100)
-        possible_destination = Vector2(self.angler.location.x + math.cos(angle) * distance, self.angler.location.y + math.sin(angle) * distance)        
-        
-        # If the destination will go off the map, it is NOT a valid move under any circumstances.
-        bad_spot = False
-        if (0 > possible_destination.x > self.angler.world.world_size[0] or
-            0 > possible_destination.y > self.angler.world.world_size[1]):
-            bad_spot = True
-
-        if ((not TileFuncs.get_tile(self.angler.world, possible_destination).walkable and r_num < r_max) or bad_spot):
-            self.random_dest(True, r_num+1, r_max)
-        
-        self.angler.destination = possible_destination.copy()
-
 
 class Delivering(State):
 
@@ -162,16 +117,14 @@ class Delivering(State):
         self.angler = angler
 
     def entry_actions(self):
+        #TODO: Make dropoff point dynamic (e.g. it's own building)
 
-        self.angler.destination = Vector2(self.angler.world.w/2,self.angler.world.h/2)
+        self.angler.destination = Vector2(self.angler.world.w/2, self.angler.world.h/2)
 
     def do_actions(self):
         pass
 
     def check_conditions(self):
-
-        # if self.angler.world.wood >= self.angler.world.MAXwood:
-        #    return "IDLE"
 
         if self.angler.location.get_distance_to(self.angler.destination) < 15:
             self.angler.world.fish += self.angler.fish

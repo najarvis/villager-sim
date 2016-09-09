@@ -5,6 +5,7 @@ import Clips
 import Farmer
 import Lumberjack
 import Angler
+import Explorer
 
 class World(object):
     """This class holds everything in the game. It also
@@ -147,23 +148,34 @@ class World(object):
         Returns:
             None"""
 
-        for lumberjack_num in xrange(3):
+        num_lumber = 4
+        num_angler = 2
+        num_farmer = 2
+        num_explorer = 1
+
+        for lumberjack_num in xrange(num_lumber):
             lumberjack = Lumberjack.Lumberjack(self, "Lumberjack")
             lumberjack.location = vector2.Vector2(self.w / 2, self.h / 2)
             lumberjack.brain.set_state("Searching")
             self.add_entity(lumberjack)
 
-        for angler_num in xrange(3):
+        for angler_num in xrange(num_angler):
             angler = Angler.Angler(self, "UsainBolt") # In case you are wondering, there is no 'Angler.png' image. Don't shoot me.
             angler.location = vector2.Vector2(self.w / 2, self.h / 2)
             angler.brain.set_state("Searching")
             self.add_entity(angler)
 
-        for farmer_num in xrange(3):
+        for farmer_num in xrange(num_farmer):
             farmer = Farmer.Farmer(self, "Farmer")
             farmer.location = vector2.Vector2(self.w / 2, self.h / 2)
             farmer.brain.set_state("Planting")
             self.add_entity(farmer)
+
+        for explorer_num in xrange(num_explorer):
+            explorer = Explorer.Explorer(self, "Explorer")
+            explorer.location = vector2.Vector2(self.w / 2, self.h / 2)
+            explorer.brain.set_state("Exploring")
+            self.add_entity(explorer)
 
     def add_entity(self, entity):
         """Maps the input entity to the entity hash table (dictionary)
