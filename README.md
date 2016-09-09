@@ -9,13 +9,7 @@ Start
 
 Install pygame
 
-Start with ```python NewVillagerSim.py```
-
-Screenshot
----------
-
-Press F2 for screenshot, F3 for minimap and F4 for full map.
-The shots are save in ```Images/Screenshots```
+Start with ```python UpdatingVillagerSim.py```
 
 Licence
 -------
