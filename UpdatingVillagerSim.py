@@ -8,7 +8,7 @@ import TileFuncs
 import World
 import DebugTools
 
-def run(fullscreen):
+def run(fullscreen, world_size=64):
     """The main function to run the program.
 
     Args:
@@ -27,7 +27,7 @@ def run(fullscreen):
     else:
         screen = pygame.display.set_mode(screen_size, 0)
 
-    game_world = World.World((64, 64), screen_size)
+    game_world = World.World((world_size, world_size), screen_size)
 
     pygame.display.set_caption("Villager Sim")
 
@@ -55,8 +55,12 @@ def run(fullscreen):
                 if event.key == pygame.K_ESCAPE:
                     done = True
 
-		if event.key == pygame.K_SPACE:
+		elif event.key == pygame.K_SPACE:
 		    pause = not pause
+                
+                elif event.key == pygame.K_F3:
+                    pygame.image.save(game_world.world_surface, "FullScreenshot.png")
+
 
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 3:
@@ -103,5 +107,7 @@ def run(fullscreen):
 if __name__ == "__main__":
     if len(sys.argv) == 2:
         run(bool(int(sys.argv[1])))
+    elif len(sys.argv) == 3:
+        run(bool(int(sys.argv[1])), int(sys.argv[2]))
     else:
         run(False)

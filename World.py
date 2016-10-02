@@ -6,6 +6,7 @@ import Farmer
 import Lumberjack
 import Angler
 import Explorer
+import Arborist
 
 class World(object):
     """This class holds everything in the game. It also
@@ -66,8 +67,10 @@ class World(object):
 
         map_width, map_height = array_size
         map_generator = VoronoiMapGen.mapGen()
-        vor_map = map_generator.negative(map_generator.reallyCoolFull(array_size,
-                                                                                num_p=23))
+        
+        # vor_map = map_generator.negative(map_generator.reallyCoolFull(array_size, num_p=23))
+        vor_map = map_generator.radial_drop(map_generator.negative(map_generator.reallyCoolFull(array_size, num_p=23)), max_scalar = 1.5, min_scalar = 0.0)
+
         self.minimap_img = pygame.Surface((map_width, map_height))
         self.tile_array = [[0 for tile_x in xrange(map_width)] for tile_y in xrange(map_height)]
         self.world_surface = pygame.Surface(self.world_size, pygame.HWSURFACE)
@@ -148,9 +151,18 @@ class World(object):
         Returns:
             None"""
 
-        num_lumber = 4
-        num_angler = 2
-        num_farmer = 2
+        # TODO: Finish optimizing the start
+        start = {"lumber": {"count": 0,
+                            "state": "Searching"},
+
+                 "angler": {"count": 0,
+                            "state": "Searching"}
+                 }
+
+        num_lumber = 3
+        num_angler = 1
+        num_arborist = 3
+        num_farmer = 0
         num_explorer = 1
 
         for lumberjack_num in xrange(num_lumber):
@@ -165,10 +177,16 @@ class World(object):
             angler.brain.set_state("Searching")
             self.add_entity(angler)
 
+        for arborist_num in xrange(num_arborist):
+            arborist = Arborist.Arborist(self, "Warrior")
+            arborist.location = vector2.Vector2(self.w / 2, self.h / 2)
+            arborist.brain.set_state("Planting")
+            self.add_entity(arborist)
+
         for farmer_num in xrange(num_farmer):
             farmer = Farmer.Farmer(self, "Farmer")
             farmer.location = vector2.Vector2(self.w / 2, self.h / 2)
-            farmer.brain.set_state("Planting")
+            farmer.brain.set_state("Tilling")
             self.add_entity(farmer)
 
         for explorer_num in xrange(num_explorer):

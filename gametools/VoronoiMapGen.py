@@ -1,3 +1,4 @@
+import math
 import pygame
 from random import randint
 
@@ -237,6 +238,22 @@ class mapGen:
                 toReturn[x][y] = 255-ARRAY[x][y]
 
         return toReturn
+
+    def radial_drop(self, array, max_scalar=1.0, min_scalar=0.5):
+        height, width = len(array), len(array[0])
+        center_y, center_x = height / 2, width / 2
+        
+        max_dis = math.sqrt(center_x ** 2 + center_y ** 2)
+
+        to_return = array[:]
+        for y in xrange(height):
+            for x in xrange(width):
+                t = math.sqrt((x - center_x) ** 2 + (y - center_y) ** 2) / max_dis
+                to_return[x][y] *= self.lerp(max_scalar, min_scalar, t)
+
+        return to_return
+
+
 
 
     def reallyCoolFull(self, total_size=(256,256), num_p=25):

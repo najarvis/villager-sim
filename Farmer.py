@@ -1,4 +1,8 @@
-from aitools.StateMachine import *
+"""This class is going to be tasked with planting and harvesting crops. This
+   class used to plant trees, however this has been moved to Arborist (which
+   is the name of someone who takes care of trees you pleb)."""
+
+import aitools.StateMachine
 from Entities import *
 from GameEntity import *
 from gametools.vector2 import Vector2
@@ -8,20 +12,22 @@ import math
 import pygame
 import random
 import TileFuncs
-from World import *
 import BaseFunctions
 
 class Farmer(GameEntity):
+    """The main class for Farmer. See above for the description"""
 
     def __init__(self, world, image_string):
+        """Basic initialization"""
+
         # Initializing the class
         GameEntity.__init__(self, world, "Farmer", "Entities/"+image_string)
 
         # Creating the states
-        planting_state = Farmer_Planting(self)
+        tilling_state = Farmer_Tilling(self)
 
         # Adding states to the brain
-        self.brain.add_state(planting_state)
+        self.brain.add_state(tilling_state)
 
         self.max_speed = 80.0 * (1.0 / 60.0)
         self.speed = self.max_speed
@@ -29,73 +35,40 @@ class Farmer(GameEntity):
         self.worldSize = world.world_size
         self.TileSize = self.world.tile_size
 
-        # animation variables
-        self.animation = Ani(6,10)
-        self.pic = pygame.image.load("Images/Entities/map.png")
-        self.img_func = ImageFuncs(18, 17,self.pic)
-        self.sprites = self.img_func.get_images(6,0,0)
-        self.hit = 0
-        self.update()
+class Farmer_Tilling(aitools.StateMachine.State):
+    
+    def __init__(self, farmer):
+        aitools.StateMachine.State.__init__(self, "Tilling")
+        self.farmer = farmer
 
-    def update(self):
-        # Updates image every 10 cycles and adds 1 to the 4 hit dig
-        self.image = self.sprites[self.animation.get_frame()]
-        self.image.set_colorkey((255,0,255))
-        if self.animation.finished == True:
-            self.hit += 1
-            self.animation.finished = False
-
-
-class Farmer_Planting(State):
-
-    def __init__(self, Farmer):
-
-        State.__init__(self, "Planting")
-        self.farmer = Farmer
-
-    def check_conditions(self):
-
-        if self.farmer.location.get_distance_to(self.farmer.destination) < 15:
-            self.farmer.destination = Vector2(self.farmer.location)
-            self.farmer.update()
-
-    def do_actions(self):
-
-        if self.farmer.location == self.farmer.destination and self.farmer.hit >= 4 and TileFuncs.get_tile(
-                self.farmer.world,self.farmer.location).plantable == 1:
-            self.plant_seed()
-
-        if self.farmer.location == self.farmer.destination and self.farmer.hit != 4 and TileFuncs.get_tile(
-                self.farmer.world, self.farmer.location).plantable != 1:
-            BaseFunctions.random_dest(self.farmer)
-
-    def plant_seed(self):
-        # Function for planting trees
-
-        # Test to see if the tile the farmer is on is a tile that a tree can be planted on
-        if TileFuncs.get_tile(self.farmer.world,self.farmer.location).plantable == 1:
-            self.farmer.hit = 0
-            self.farmer.update()
-            old_tile = TileFuncs.get_tile(self.farmer.world,Vector2(self.farmer.location))
-
-            darkness = pygame.Surface((32, 32))
-            darkness.set_alpha(old_tile.darkness)
-
-            new_tile = Tile.Baby_Tree(self.farmer.world, "GrassWithCenterTree")
-
-            new_tile.darkness = old_tile.darkness
-
-            new_tile.location = TileFuncs.get_tile_pos(self.farmer.world,self.farmer.destination)*32
-            new_tile.rect.topleft = new_tile.location
-            new_tile.color = old_tile.color
-
-            self.farmer.world.tile_array[int(new_tile.location.y/32)][int(new_tile.location.x/32)] = new_tile
-            self.farmer.world.world_surface.blit(new_tile.img, new_tile.location)
-            self.farmer.world.world_surface.blit(darkness, new_tile.location)
-
-        # Goes to a random destination no matter what
-        self.farmer.hit = 0
+    def entry_actions(self):
         BaseFunctions.random_dest(self.farmer)
 
-def entry_actions(self):
-        self.random_dest()
+    def do_actions(self):
+        current_tile = TileFuncs.get_tile(self.farmer.world, self.farmer.location)
+        if current_tile.tillable:
+            darkness = pygame.Surface((self.farmer.TileSize, self.farmer.TileSize))
+            darkness.set_alpha(current_tile.darkness)
+
+            new_tile = Tile.SoilTile(self.farmer.world, "Soil2")
+            new_tile.darkness = darkness
+
+            new_tile.location = current_tile.location
+            new_tile.rect.topleft = new_tile.location
+            new_tile.color = current_tile.color # TODO: Figure out what this does.
+
+            self.farmer.world.tile_array[int(new_tile.location.y / 32)][int(new_tile.location.x / 32)] = new_tile
+            self.farmer.world.world_surface.blit(new_tile.img, new_tile.location)
+            self.farmer.world.world_surface.blit(darkness, new_tile.location)
+            # TODO: Update the minimap
+
+            BaseFunctions.random_dest(self.farmer)
+
+        elif self.farmer.location.get_distance_to(self.farmer.destination) < self.farmer.speed:
+            BaseFunctions.random_dest(self.farmer)
+
+    def check_conditions(self):
+        pass
+
+    def exit_actions(self):
+        pass
