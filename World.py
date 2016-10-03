@@ -1,3 +1,4 @@
+import sys
 import pygame
 from gametools import vector2, VoronoiMapGen
 import Tile
@@ -70,16 +71,40 @@ class World(object):
         
         # vor_map = map_generator.negative(map_generator.reallyCoolFull(array_size, num_p=23))
         vor_map = map_generator.radial_drop(map_generator.negative(map_generator.reallyCoolFull(array_size, num_p=23)), max_scalar = 1.5, min_scalar = 0.0)
-
+        # vor_map = [[150 for x in xrange(128)] for y in xrange(128) ] all grass map for testing
+        
         self.minimap_img = pygame.Surface((map_width, map_height))
         self.tile_array = [[0 for tile_x in xrange(map_width)] for tile_y in xrange(map_height)]
         self.world_surface = pygame.Surface(self.world_size, pygame.HWSURFACE)
         
+        if len(sys.argv) >= 4:
+            do_hard_shadow = bool(int(sys.argv[3]))
+        else:
+            do_hard_shadow = False
+        if do_hard_shadow:
+            shadow_height = 0
+            shadow_drop = 5
+            shaded = False
+
         for tile_x in xrange(map_width):
+            shadow_height = 0
 
             for tile_y in xrange(map_height):
 
                 color = vor_map[tile_x][tile_y]
+
+                if do_hard_shadow:
+                    shaded = False
+                    if color < shadow_height and not shadow_height < 110:
+                        shaded = True
+                        shadow_height -= shadow_drop
+
+                    elif color >= 110 and color > shadow_height:
+                        shadow_height = color
+                        shadow_height -= shadow_drop
+
+                    else:
+                        shadow_height -= shadow_drop
 
                 if color < 110:
                     # Water tile
@@ -122,6 +147,12 @@ class World(object):
                 
                 subtle_shadow = pygame.Surface((self.tile_size, self.tile_size))
                 subtle_shadow.set_alpha(alph)
+                
+                if do_hard_shadow:
+                    hard_shadow = pygame.Surface((self.tile_size, self.tile_size))
+                    hard_shadow.set_alpha(128)
+                    if shaded:
+                        new_tile.img.blit(hard_shadow, (0, 0))
 
                 self.world_surface.blit(new_tile.img, new_tile.location)
                 self.world_surface.blit(subtle_shadow, new_tile.location)
@@ -159,9 +190,9 @@ class World(object):
                             "state": "Searching"}
                  }
 
-        num_lumber = 3
+        num_lumber = 4
         num_angler = 1
-        num_arborist = 3
+        num_arborist = 2
         num_farmer = 0
         num_explorer = 1
 

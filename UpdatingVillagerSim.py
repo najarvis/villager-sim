@@ -89,7 +89,7 @@ def run(fullscreen, world_size=64):
 	if not pause:
             game_world.process(time_passed_seconds)
 
-	    tile_list = TileFuncs.get_vnn_array(game_world, game_world.entities[0].location, 2)
+	    # tile_list = TileFuncs.get_vnn_array(game_world, game_world.entities[0].location, 2)
 	    # DebugTools.print_surrounding_tiles(game_world)
 	    # DebugTools.print_surrounding_tiles(game_world, "Location")
             

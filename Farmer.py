@@ -31,6 +31,7 @@ class Farmer(GameEntity):
 
         self.max_speed = 80.0 * (1.0 / 60.0)
         self.speed = self.max_speed
+        self.base_speed = self.speed
 
         self.worldSize = world.world_size
         self.TileSize = self.world.tile_size
