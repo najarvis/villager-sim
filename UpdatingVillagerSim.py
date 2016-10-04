@@ -22,7 +22,9 @@ def run(fullscreen, world_size=64):
     pygame.init()
     screen_size = (1280, 720)
     if fullscreen:
-        screen = pygame.display.set_mode(pygame.display.list_modes()[0],
+        screen_size = (1920, 1080)
+        print screen_size
+        screen = pygame.display.set_mode(screen_size,
                 pygame.FULLSCREEN | pygame.HWSURFACE)
     else:
         screen = pygame.display.set_mode(screen_size, 0)
@@ -55,17 +57,16 @@ def run(fullscreen, world_size=64):
                 if event.key == pygame.K_ESCAPE:
                     done = True
 
-		elif event.key == pygame.K_SPACE:
-		    pause = not pause
+                elif event.key == pygame.K_SPACE:
+                    pause = not pause
                 
                 elif event.key == pygame.K_F3:
                     pygame.image.save(game_world.world_surface, "FullScreenshot.png")
 
-
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 3:
                     entity = TileFuncs.get_entity(game_world,pos)
-                    if entity != None:
+                    if entity is not None:
                         # print entity[1].name
                         entity[1].active_info = not entity[1].active_info
 
@@ -83,23 +84,16 @@ def run(fullscreen, world_size=64):
                 y_temp_1 = -game_world.clipper.b * (pos.y - game_world.clipper.minimap_rect.y)
                 y_temp_2 = game_world.clipper.rect_view_h * game_world.clipper.b
                 game_world.world_position.y = y_temp_1 + (y_temp_2 / 2)
-	
-	    # Process everything in the game world
 
-	if not pause:
+        # Process everything in the game world
+        if not pause:
             game_world.process(time_passed_seconds)
-
-	    # tile_list = TileFuncs.get_vnn_array(game_world, game_world.entities[0].location, 2)
-	    # DebugTools.print_surrounding_tiles(game_world)
-	    # DebugTools.print_surrounding_tiles(game_world, "Location")
-            
-            # print TileFuncs.get_tile(game_world, tile_list[0]), TileFuncs.get_tile(game_world, tile_list[4])
 
         # Clear the screen, then draw the world onto it
         screen.fill((0, 0, 0))
         game_world.render_all(screen, time_passed_seconds, pos)
-	
-	# Update the screen
+
+        # Update the screen
         pygame.display.update()
 
     pygame.quit()
@@ -107,7 +101,7 @@ def run(fullscreen, world_size=64):
 if __name__ == "__main__":
     if len(sys.argv) == 2:
         run(bool(int(sys.argv[1])))
-    elif len(sys.argv) == 3:
+    elif len(sys.argv) >= 3:
         run(bool(int(sys.argv[1])), int(sys.argv[2]))
     else:
         run(False)
