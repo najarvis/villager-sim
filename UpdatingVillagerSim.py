@@ -26,7 +26,7 @@ def run(fullscreen, world_size=64):
         if screen_size[0] > 1920:
             screen_size = (1920, 1080)
         screen = pygame.display.set_mode(screen_size,
-                pygame.FULLSCREEN | pygame.HWSURFACE)
+                 pygame.FULLSCREEN | pygame.HWSURFACE)
     else:
         screen = pygame.display.set_mode(screen_size, 0)
 
@@ -75,7 +75,7 @@ def run(fullscreen, world_size=64):
 
             # This code moves the view to where the user is clicking in
             # the minimap. Don't ask me how it works, I have no idea.
-            if (pos.x > game_world.clipper.minimap_rect.x and \
+            if (pos.x > game_world.clipper.minimap_rect.x and
                 pos.y > game_world.clipper.minimap_rect.y):
 
                 x_temp_1 = -game_world.clipper.a * (pos.x - game_world.clipper.minimap_rect.x)
