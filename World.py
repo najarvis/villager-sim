@@ -83,7 +83,7 @@ class World(object):
             do_hard_shadow = False
         if do_hard_shadow:
             shadow_height = 0
-            shadow_drop = 5
+            shadow_drop = 2.5
             shaded = False
 
         for tile_x in xrange(map_width):
@@ -183,48 +183,33 @@ class World(object):
             None"""
 
         # TODO: Finish optimizing the start
-        start = {"lumber": {"count": 0,
-                            "state": "Searching"},
+        start = {"Lumberjack": {"count": 4,
+                                "state": "Searching",
+                                "class": Lumberjack.Lumberjack},
 
-                 "angler": {"count": 0,
-                            "state": "Searching"}
+                 "Angler": {"count": 1,
+                            "state": "Searching",
+                            "class": Angler.Angler},
+
+                 "Arborist": {"count": 2,
+                              "state": "Planting",
+                              "class": Arborist.Arborist},
+
+                 "Farmer": {"count": 0,
+                            "state": "Tilling",
+                            "class": Farmer.Farmer},
+
+                 "Explorer": {"count": 1,
+                              "state": "Exploring",
+                              "class": Explorer.Explorer}
                  }
 
-        num_lumber = 4
-        num_angler = 1
-        num_arborist = 2
-        num_farmer = 0
-        num_explorer = 1
-
-        for lumberjack_num in xrange(num_lumber):
-            lumberjack = Lumberjack.Lumberjack(self, "Lumberjack")
-            lumberjack.location = vector2.Vector2(self.w / 2, self.h / 2)
-            lumberjack.brain.set_state("Searching")
-            self.add_entity(lumberjack)
-
-        for angler_num in xrange(num_angler):
-            angler = Angler.Angler(self, "UsainBolt") # In case you are wondering, there is no 'Angler.png' image. Don't shoot me.
-            angler.location = vector2.Vector2(self.w / 2, self.h / 2)
-            angler.brain.set_state("Searching")
-            self.add_entity(angler)
-
-        for arborist_num in xrange(num_arborist):
-            arborist = Arborist.Arborist(self, "Warrior")
-            arborist.location = vector2.Vector2(self.w / 2, self.h / 2)
-            arborist.brain.set_state("Planting")
-            self.add_entity(arborist)
-
-        for farmer_num in xrange(num_farmer):
-            farmer = Farmer.Farmer(self, "Farmer")
-            farmer.location = vector2.Vector2(self.w / 2, self.h / 2)
-            farmer.brain.set_state("Tilling")
-            self.add_entity(farmer)
-
-        for explorer_num in xrange(num_explorer):
-            explorer = Explorer.Explorer(self, "Explorer")
-            explorer.location = vector2.Vector2(self.w / 2, self.h / 2)
-            explorer.brain.set_state("Exploring")
-            self.add_entity(explorer)
+        for key in start.keys():
+            for count in xrange(start[key]["count"]):
+                new_ent = start[key]["class"](self, key)
+                new_ent.location = vector2.Vector2(self.w / 2, self.h / 2)
+                new_ent.brain.set_state(start[key]["state"])
+                self.add_entity(new_ent)
 
     def add_entity(self, entity):
         """Maps the input entity to the entity hash table (dictionary)
