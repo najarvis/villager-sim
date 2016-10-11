@@ -29,7 +29,7 @@ class World(object):
 
         self.tile_size = 32
         self.w, self.h = self.world_size = tile_dimensions[0] * self.tile_size, \
-                                            tile_dimensions[1] * self.tile_size
+                                           tile_dimensions[1] * self.tile_size
         self.world_position = vector2.Vector2(-self.w / 2, -self.h / 2)
 
         self.clock = pygame.time.Clock()
@@ -44,16 +44,15 @@ class World(object):
 
         self.new_world(tile_dimensions)
         self.clipper = Clips.Clips(self, screen_size)
+
         self.info_bar = pygame.image.load("Images/Entities/info_bar.png").convert()
-        self.info_bar.set_colorkey((255,0,255))
-        self.f_high = (50,200,50)
-        self.f_low = (255,0,0)
-        self.w_high = (0,0,255)
-        self.w_low = (76,70,50)
-        self.e_high = (0,255,0)
-        self.e_low = (50,50,0)
-
-
+        self.info_bar.set_colorkey((255, 0, 255))
+        self.f_high = (50, 200, 50)
+        self.f_low = (255, 0, 0)
+        self.w_high = (0, 0, 255)
+        self.w_low = (76, 70, 50)
+        self.e_high = (0, 255, 0)
+        self.e_low = (50, 50, 0)
 
     def new_world(self, array_size):
         """Creates a new world (including all of the entities)
@@ -156,15 +155,14 @@ class World(object):
 
                 self.world_surface.blit(new_tile.img, new_tile.location)
                 self.world_surface.blit(subtle_shadow, new_tile.location)
-                
-                self.minimap_img.blit(
-                        new_tile.img.subsurface(
-                            (0, 0, 1, 1)), (tile_x, tile_y))
-
 
                 self.minimap_img.blit(
-                        subtle_shadow.subsurface(
-                            (0, 0, 1, 1)), (tile_x, tile_y))
+                    new_tile.img.subsurface(
+                        (0, 0, 1, 1)), (tile_x, tile_y))
+
+                self.minimap_img.blit(
+                    subtle_shadow.subsurface(
+                        (0, 0, 1, 1)), (tile_x, tile_y))
 
                 self.tile_array[tile_y][tile_x] = new_tile
         
@@ -263,7 +261,7 @@ class World(object):
 
         for entity in self.entities.itervalues():
             entity.render(surface)
-            if entity.active_info == True:
+            if entity.active_info:
                 self.render_info_bar(surface,entity)
 
     def render_all(self, surface, delta, mouse_pos):
@@ -283,19 +281,18 @@ class World(object):
         """
         self.clipper.render(surface, delta, mouse_pos)
 
-
-    def render_info_bar(self,surface,entity):
-        lst = [self.f_high,self.f_low,self.w_high,self.w_low,self.e_high,self.e_low]
-        lst2 = [entity.food,entity.water,entity.energy]
-        surface.blit(self.info_bar,(entity.world_location.x +10,entity.world_location.y - 20))
+    def render_info_bar(self, surface, entity):
+        lst = [self.f_high, self.f_low, self.w_high, self.w_low, self.e_high, self.e_low]
+        lst2 = [entity.food, entity.water, entity.energy]
+        surface.blit(self.info_bar, (entity.world_location.x +10, entity.world_location.y - 20))
         for i in xrange(3):
             t = lst2[i] / 100.
-            r = self.lerp(lst[2*i][0],lst[2*i + 1][0],t)
-            g = self.lerp(lst[2*i][1],lst[2*i + 1][1],t)
-            b = self.lerp(lst[2*i][2],lst[2*i + 1][2],t)
-            pygame.draw.rect(surface,(r,g,b),pygame.Rect((entity.world_location.x +20,entity.world_location.y - 14 + (i*7)),(int(40*t),4)))
+            r = self.lerp(lst[2 * i][0], lst[2 * i + 1][0], t)
+            g = self.lerp(lst[2 * i][1], lst[2 * i + 1][1], t)
+            b = self.lerp(lst[2 * i][2], lst[2 * i + 1][2], t)
+            pygame.draw.rect(surface, (r, g, b),
+                             pygame.Rect((entity.world_location.x + 20, entity.world_location.y - 14 + (i * 7)),
+                                         (int(40 * t), 4)))
 
-    def lerp(self,v1,v2,t):
-        return (1-t)*v2 + t*v1
-
-
+    def lerp(self, v1, v2, t):
+        return (1 - t) * v2 + t * v1
