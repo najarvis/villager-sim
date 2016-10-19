@@ -15,6 +15,9 @@ def run(fullscreen, world_size=64):
         fullscreen: Boolean value that determines if the program is
             in fullscreen mode.
 
+        world_size: Integer (power of 2) value that determines the
+            dimensions of the game world in terms of tiles.
+
     Returns:
         None
     """
@@ -66,25 +69,14 @@ def run(fullscreen, world_size=64):
 
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 3:
-                    entity = TileFuncs.get_entity(game_world,pos)
+                    entity = TileFuncs.get_entity(game_world, pos)
                     if entity is not None:
-                        # print entity[1].name
+                        # Toggle the entity info
                         entity[1].active_info = not entity[1].active_info
 
         if pygame.mouse.get_pressed()[0]:
-
-            # This code moves the view to where the user is clicking in
-            # the minimap. Don't ask me how it works, I have no idea.
-            if (pos.x > game_world.clipper.minimap_rect.x and
-                pos.y > game_world.clipper.minimap_rect.y):
-
-                x_temp_1 = -game_world.clipper.a * (pos.x - game_world.clipper.minimap_rect.x)
-                x_temp_2 = game_world.clipper.rect_view_w * game_world.clipper.a
-                game_world.world_position.x = x_temp_1 + (x_temp_2 / 2)
-
-                y_temp_1 = -game_world.clipper.b * (pos.y - game_world.clipper.minimap_rect.y)
-                y_temp_2 = game_world.clipper.rect_view_h * game_world.clipper.b
-                game_world.world_position.y = y_temp_1 + (y_temp_2 / 2)
+            # check to see if the user is clicking on the minimap and update position accordingly
+            game_world.check_minimap_update(pos)
 
         # Process everything in the game world
         if not pause:
@@ -92,7 +84,7 @@ def run(fullscreen, world_size=64):
 
         # Clear the screen, then draw the world onto it
         screen.fill((0, 0, 0))
-        game_world.render_all(screen, time_passed_seconds, pos)
+        game_world.render_all(screen)
 
         # Update the screen
         pygame.display.update()

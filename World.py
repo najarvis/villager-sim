@@ -1,6 +1,7 @@
 import sys
 import pygame
-from gametools import vector2, VoronoiMapGen
+from gametools import vector2, VoronoiMapGen, MidpointDisplacement, PertTools
+import math
 import Tile
 import Clips
 import Farmer
@@ -28,11 +29,12 @@ class World(object):
         """
 
         self.tile_size = 32
-        self.w, self.h = self.world_size = tile_dimensions[0] * self.tile_size, \
-                                           tile_dimensions[1] * self.tile_size
+        self.w, self.h = self.world_size = (tile_dimensions[0] * self.tile_size, tile_dimensions[1] * self.tile_size)
         self.world_position = vector2.Vector2(-self.w / 2, -self.h / 2)
 
         self.clock = pygame.time.Clock()
+
+        # Unused variables
         self.wood = 0
         self.fish = 0
 
@@ -45,6 +47,7 @@ class World(object):
         self.new_world(tile_dimensions)
         self.clipper = Clips.Clips(self, screen_size)
 
+        # TODO (wazzup771@gmail.com | Nick Wayne): Not sure if these belong here either
         self.info_bar = pygame.image.load("Images/Entities/info_bar.png").convert()
         self.info_bar.set_colorkey((255, 0, 255))
         self.f_high = (50, 200, 50)
@@ -67,11 +70,27 @@ class World(object):
 
         map_width, map_height = array_size
         map_generator = VoronoiMapGen.mapGen()
-        
+
+        midpoint_generator = MidpointDisplacement.MidpointDisplacement()
+        mid_map = PertTools.scale_array(midpoint_generator.normalize(midpoint_generator.NewMidDis(int(math.log(map_width, 2)))), 255)
+        vor_map = map_generator.whole_new_updated(size=array_size, ppr=2, c1=-1, c2=1, c3=0)
+
+        combined_map = PertTools.combine_arrays(vor_map, mid_map, 0.33, 0.66)
+
+        pert_map = PertTools.scale_array(midpoint_generator.normalize(midpoint_generator.NewMidDis(int(math.log(map_width, 2)))), 255)
+        vor_map = map_generator.radial_drop(PertTools.pertubate(combined_map, pert_map), 1.5, 0.0)
+        # vor_map = map_generator.radial_drop(mid_map, 1.5, 0.0)
+
+
+        # vor_map = map_generator.radial_drop(map_generator.negative(map_generator.reallyCoolFull(array_size, num_p=23)), max_scalar=1.5, min_scalar=0.0)
+
+
+        # All grass map for testing
+        # vor_map = [[150 for x in xrange(128)] for y in xrange(128) ]
+
+        # Method without radial drop
         # vor_map = map_generator.negative(map_generator.reallyCoolFull(array_size, num_p=23))
-        vor_map = map_generator.radial_drop(map_generator.negative(map_generator.reallyCoolFull(array_size, num_p=23)), max_scalar = 1.5, min_scalar = 0.0)
-        # vor_map = [[150 for x in xrange(128)] for y in xrange(128) ] all grass map for testing
-        
+
         self.minimap_img = pygame.Surface((map_width, map_height))
         self.tile_array = [[0 for tile_x in xrange(map_width)] for tile_y in xrange(map_height)]
         self.world_surface = pygame.Surface(self.world_size, pygame.HWSURFACE)
@@ -81,8 +100,7 @@ class World(object):
         else:
             do_hard_shadow = False
         if do_hard_shadow:
-            shadow_height = 0
-            shadow_drop = 2.5
+            shadow_drop = 2.5 / (map_width / 128.0)
             shaded = False
 
         for tile_x in xrange(map_width):
@@ -180,16 +198,15 @@ class World(object):
         Returns:
             None"""
 
-        # TODO: Finish optimizing the start
-        start = {"Lumberjack": {"count": 4,
+        start = {"Lumberjack": {"count": 0,
                                 "state": "Searching",
                                 "class": Lumberjack.Lumberjack},
 
-                 "Angler": {"count": 1,
+                 "Angler": {"count": 5,
                             "state": "Searching",
                             "class": Angler.Angler},
 
-                 "Arborist": {"count": 2,
+                 "Arborist": {"count": 0,
                               "state": "Planting",
                               "class": Arborist.Arborist},
 
@@ -197,7 +214,7 @@ class World(object):
                             "state": "Tilling",
                             "class": Farmer.Farmer},
 
-                 "Explorer": {"count": 1,
+                 "Explorer": {"count": 0,
                               "state": "Exploring",
                               "class": Explorer.Explorer}
                  }
@@ -264,7 +281,7 @@ class World(object):
             if entity.active_info:
                 self.render_info_bar(surface,entity)
 
-    def render_all(self, surface, delta, mouse_pos):
+    def render_all(self, surface):
         """Calls the clipper's render function, which also calls
         this class's render function. Used so the main file doesn't
         have to call the clipper.
@@ -279,12 +296,35 @@ class World(object):
         Returns:
             None
         """
-        self.clipper.render(surface, delta, mouse_pos)
+        self.clipper.render(surface)
 
+    def check_minimap_update(self, mouse_pos):
+        """This code moves the view to where the user is clicking in
+        the minimap. Don't ask me how it works, I have no idea.
+
+        Args:
+            mouse_pos: Vector2 instance that contains the position of the mouse
+
+        Returns:
+            None
+        """
+
+        if (mouse_pos.x > self.clipper.minimap_rect.x and
+            mouse_pos.y > self.clipper.minimap_rect.y):
+
+            x_temp_1 = -self.clipper.a * (mouse_pos.x - self.clipper.minimap_rect.x)
+            x_temp_2 = self.clipper.rect_view_w * self.clipper.a
+            self.world_position.x = x_temp_1 + (x_temp_2 / 2)
+
+            y_temp_1 = -self.clipper.b * (mouse_pos.y - self.clipper.minimap_rect.y)
+            y_temp_2 = self.clipper.rect_view_h * self.clipper.b
+            self.world_position.y = y_temp_1 + (y_temp_2 / 2)
+
+    # TODO(wazzup771@gmail.com | Nick Wayne): This function doesn't belong in this class, perhaps the entity superclass.
     def render_info_bar(self, surface, entity):
         lst = [self.f_high, self.f_low, self.w_high, self.w_low, self.e_high, self.e_low]
         lst2 = [entity.food, entity.water, entity.energy]
-        surface.blit(self.info_bar, (entity.world_location.x +10, entity.world_location.y - 20))
+        surface.blit(self.info_bar, (entity.world_location.x + 10, entity.world_location.y - 20))
         for i in xrange(3):
             t = lst2[i] / 100.
             r = self.lerp(lst[2 * i][0], lst[2 * i + 1][0], t)
