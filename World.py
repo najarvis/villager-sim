@@ -83,7 +83,7 @@ class World(object):
             do_hard_shadow = False
         if do_hard_shadow:
             shadow_height = 0
-            shadow_drop = 5
+            shadow_drop = 5 * (128.0 / map_width)
             shaded = False
 
         for tile_x in xrange(map_width):
