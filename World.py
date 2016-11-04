@@ -1,6 +1,7 @@
 import sys
 import pygame
-from gametools import vector2, VoronoiMapGen
+from gametools import vector2, VoronoiMapGen, MidpointDisplacement, PertTools
+import math
 import Tile
 import Clips
 import Farmer
@@ -28,11 +29,12 @@ class World(object):
         """
 
         self.tile_size = 32
-        self.w, self.h = self.world_size = tile_dimensions[0] * self.tile_size, \
-                                            tile_dimensions[1] * self.tile_size
+        self.w, self.h = self.world_size = (tile_dimensions[0] * self.tile_size, tile_dimensions[1] * self.tile_size)
         self.world_position = vector2.Vector2(-self.w / 2, -self.h / 2)
 
         self.clock = pygame.time.Clock()
+
+        # Unused variables
         self.wood = 0
         self.fish = 0
 
@@ -44,16 +46,16 @@ class World(object):
 
         self.new_world(tile_dimensions)
         self.clipper = Clips.Clips(self, screen_size)
+
+        # TODO (wazzup771@gmail.com | Nick Wayne): Not sure if these belong here either
         self.info_bar = pygame.image.load("Images/Entities/info_bar.png").convert()
-        self.info_bar.set_colorkey((255,0,255))
-        self.f_high = (50,200,50)
-        self.f_low = (255,0,0)
-        self.w_high = (0,0,255)
-        self.w_low = (76,70,50)
-        self.e_high = (0,255,0)
-        self.e_low = (50,50,0)
-
-
+        self.info_bar.set_colorkey((255, 0, 255))
+        self.f_high = (50, 200, 50)
+        self.f_low = (255, 0, 0)
+        self.w_high = (0, 0, 255)
+        self.w_low = (76, 70, 50)
+        self.e_high = (0, 255, 0)
+        self.e_low = (50, 50, 0)
 
     def new_world(self, array_size):
         """Creates a new world (including all of the entities)
@@ -68,11 +70,27 @@ class World(object):
 
         map_width, map_height = array_size
         map_generator = VoronoiMapGen.mapGen()
-        
+
+        # midpoint_generator = MidpointDisplacement.MidpointDisplacement()
+        # mid_map = PertTools.scale_array(midpoint_generator.normalize(midpoint_generator.NewMidDis(int(math.log(map_width, 2)))), 255)
+        #vor_map = map_generator.whole_new_updated(size=array_size, ppr=2, c1=-1, c2=1, c3=0)
+
+        #combined_map = PertTools.combine_arrays(vor_map, mid_map, 0.33, 0.66)
+
+        # pert_map = PertTools.scale_array(midpoint_generator.normalize(midpoint_generator.NewMidDis(int(math.log(map_width, 2)))), 255)
+        # vor_map = map_generator.radial_drop(PertTools.pertubate(combined_map, pert_map), 1.5, 0.0)
+        # vor_map = map_generator.radial_drop(mid_map, 1.5, 0.0)
+
+
+        vor_map = map_generator.radial_drop(map_generator.negative(map_generator.reallyCoolFull(array_size, num_p=23)), max_scalar=1.5, min_scalar=0.0)
+
+
+        # All grass map for testing
+        # vor_map = [[150 for x in xrange(128)] for y in xrange(128) ]
+
+        # Method without radial drop
         # vor_map = map_generator.negative(map_generator.reallyCoolFull(array_size, num_p=23))
-        vor_map = map_generator.radial_drop(map_generator.negative(map_generator.reallyCoolFull(array_size, num_p=23)), max_scalar = 1.5, min_scalar = 0.0)
-        # vor_map = [[150 for x in xrange(128)] for y in xrange(128) ] all grass map for testing
-        
+
         self.minimap_img = pygame.Surface((map_width, map_height))
         self.tile_array = [[0 for tile_x in xrange(map_width)] for tile_y in xrange(map_height)]
         self.world_surface = pygame.Surface(self.world_size, pygame.HWSURFACE)
@@ -82,8 +100,7 @@ class World(object):
         else:
             do_hard_shadow = False
         if do_hard_shadow:
-            shadow_height = 0
-            shadow_drop = 5 * (128.0 / map_width)
+            shadow_drop = 2.5 / (map_width / 128.0)
             shaded = False
 
         for tile_x in xrange(map_width):
@@ -156,15 +173,14 @@ class World(object):
 
                 self.world_surface.blit(new_tile.img, new_tile.location)
                 self.world_surface.blit(subtle_shadow, new_tile.location)
-                
-                self.minimap_img.blit(
-                        new_tile.img.subsurface(
-                            (0, 0, 1, 1)), (tile_x, tile_y))
-
 
                 self.minimap_img.blit(
-                        subtle_shadow.subsurface(
-                            (0, 0, 1, 1)), (tile_x, tile_y))
+                    new_tile.img.subsurface(
+                        (0, 0, 1, 1)), (tile_x, tile_y))
+
+                self.minimap_img.blit(
+                    subtle_shadow.subsurface(
+                        (0, 0, 1, 1)), (tile_x, tile_y))
 
                 self.tile_array[tile_y][tile_x] = new_tile
         
@@ -182,49 +198,33 @@ class World(object):
         Returns:
             None"""
 
-        # TODO: Finish optimizing the start
-        start = {"lumber": {"count": 0,
-                            "state": "Searching"},
+        start = {"Lumberjack": {"count": 0,
+                                "state": "Searching",
+                                "class": Lumberjack.Lumberjack},
 
-                 "angler": {"count": 0,
-                            "state": "Searching"}
+                 "Angler": {"count": 5,
+                            "state": "Searching",
+                            "class": Angler.Angler},
+
+                 "Arborist": {"count": 0,
+                              "state": "Planting",
+                              "class": Arborist.Arborist},
+
+                 "Farmer": {"count": 0,
+                            "state": "Tilling",
+                            "class": Farmer.Farmer},
+
+                 "Explorer": {"count": 0,
+                              "state": "Exploring",
+                              "class": Explorer.Explorer}
                  }
 
-        num_lumber = 4
-        num_angler = 1
-        num_arborist = 2
-        num_farmer = 0
-        num_explorer = 1
-
-        for lumberjack_num in xrange(num_lumber):
-            lumberjack = Lumberjack.Lumberjack(self, "Lumberjack")
-            lumberjack.location = vector2.Vector2(self.w / 2, self.h / 2)
-            lumberjack.brain.set_state("Searching")
-            self.add_entity(lumberjack)
-
-        for angler_num in xrange(num_angler):
-            angler = Angler.Angler(self, "UsainBolt") # In case you are wondering, there is no 'Angler.png' image. Don't shoot me.
-            angler.location = vector2.Vector2(self.w / 2, self.h / 2)
-            angler.brain.set_state("Searching")
-            self.add_entity(angler)
-
-        for arborist_num in xrange(num_arborist):
-            arborist = Arborist.Arborist(self, "Warrior")
-            arborist.location = vector2.Vector2(self.w / 2, self.h / 2)
-            arborist.brain.set_state("Planting")
-            self.add_entity(arborist)
-
-        for farmer_num in xrange(num_farmer):
-            farmer = Farmer.Farmer(self, "Farmer")
-            farmer.location = vector2.Vector2(self.w / 2, self.h / 2)
-            farmer.brain.set_state("Tilling")
-            self.add_entity(farmer)
-
-        for explorer_num in xrange(num_explorer):
-            explorer = Explorer.Explorer(self, "Explorer")
-            explorer.location = vector2.Vector2(self.w / 2, self.h / 2)
-            explorer.brain.set_state("Exploring")
-            self.add_entity(explorer)
+        for key in start.keys():
+            for count in xrange(start[key]["count"]):
+                new_ent = start[key]["class"](self, key)
+                new_ent.location = vector2.Vector2(self.w / 2, self.h / 2)
+                new_ent.brain.set_state(start[key]["state"])
+                self.add_entity(new_ent)
 
     def add_entity(self, entity):
         """Maps the input entity to the entity hash table (dictionary)
@@ -278,10 +278,10 @@ class World(object):
 
         for entity in self.entities.itervalues():
             entity.render(surface)
-            if entity.active_info == True:
+            if entity.active_info:
                 self.render_info_bar(surface,entity)
 
-    def render_all(self, surface, delta, mouse_pos):
+    def render_all(self, surface):
         """Calls the clipper's render function, which also calls
         this class's render function. Used so the main file doesn't
         have to call the clipper.
@@ -296,21 +296,43 @@ class World(object):
         Returns:
             None
         """
-        self.clipper.render(surface, delta, mouse_pos)
+        self.clipper.render(surface)
 
+    def check_minimap_update(self, mouse_pos):
+        """This code moves the view to where the user is clicking in
+        the minimap. Don't ask me how it works, I have no idea.
 
-    def render_info_bar(self,surface,entity):
-        lst = [self.f_high,self.f_low,self.w_high,self.w_low,self.e_high,self.e_low]
-        lst2 = [entity.food,entity.water,entity.energy]
-        surface.blit(self.info_bar,(entity.world_location.x +10,entity.world_location.y - 20))
+        Args:
+            mouse_pos: Vector2 instance that contains the position of the mouse
+
+        Returns:
+            None
+        """
+
+        if (mouse_pos.x > self.clipper.minimap_rect.x and
+            mouse_pos.y > self.clipper.minimap_rect.y):
+
+            x_temp_1 = -self.clipper.a * (mouse_pos.x - self.clipper.minimap_rect.x)
+            x_temp_2 = self.clipper.rect_view_w * self.clipper.a
+            self.world_position.x = x_temp_1 + (x_temp_2 / 2)
+
+            y_temp_1 = -self.clipper.b * (mouse_pos.y - self.clipper.minimap_rect.y)
+            y_temp_2 = self.clipper.rect_view_h * self.clipper.b
+            self.world_position.y = y_temp_1 + (y_temp_2 / 2)
+
+    # TODO(wazzup771@gmail.com | Nick Wayne): This function doesn't belong in this class, perhaps the entity superclass.
+    def render_info_bar(self, surface, entity):
+        lst = [self.f_high, self.f_low, self.w_high, self.w_low, self.e_high, self.e_low]
+        lst2 = [entity.food, entity.water, entity.energy]
+        surface.blit(self.info_bar, (entity.world_location.x + 10, entity.world_location.y - 20))
         for i in xrange(3):
             t = lst2[i] / 100.
-            r = self.lerp(lst[2*i][0],lst[2*i + 1][0],t)
-            g = self.lerp(lst[2*i][1],lst[2*i + 1][1],t)
-            b = self.lerp(lst[2*i][2],lst[2*i + 1][2],t)
-            pygame.draw.rect(surface,(r,g,b),pygame.Rect((entity.world_location.x +20,entity.world_location.y - 14 + (i*7)),(int(40*t),4)))
+            r = self.lerp(lst[2 * i][0], lst[2 * i + 1][0], t)
+            g = self.lerp(lst[2 * i][1], lst[2 * i + 1][1], t)
+            b = self.lerp(lst[2 * i][2], lst[2 * i + 1][2], t)
+            pygame.draw.rect(surface, (r, g, b),
+                             pygame.Rect((entity.world_location.x + 20, entity.world_location.y - 14 + (i * 7)),
+                                         (int(40 * t), 4)))
 
-    def lerp(self,v1,v2,t):
-        return (1-t)*v2 + t*v1
-
-
+    def lerp(self, v1, v2, t):
+        return (1 - t) * v2 + t * v1
