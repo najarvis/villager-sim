@@ -198,15 +198,15 @@ class World(object):
         Returns:
             None"""
 
-        start = {"Lumberjack": {"count": 0,
+        start = {"Lumberjack": {"count": 2,
                                 "state": "Searching",
                                 "class": Lumberjack.Lumberjack},
 
-                 "Angler": {"count": 5,
+                 "Angler": {"count": 2,
                             "state": "Searching",
                             "class": Angler.Angler},
 
-                 "Arborist": {"count": 0,
+                 "Arborist": {"count": 1,
                               "state": "Planting",
                               "class": Arborist.Arborist},
 
@@ -214,7 +214,7 @@ class World(object):
                             "state": "Tilling",
                             "class": Farmer.Farmer},
 
-                 "Explorer": {"count": 0,
+                 "Explorer": {"count": 1,
                               "state": "Exploring",
                               "class": Explorer.Explorer}
                  }

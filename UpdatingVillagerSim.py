@@ -1,4 +1,4 @@
-"""This will basically be a rewrite of the original file,
+"""This will basically be a rewrite of the original file,`
    but this time with a focus on clean code and commenting."""
 
 import sys
@@ -63,9 +63,14 @@ def run(fullscreen, world_size=64):
 
                 elif event.key == pygame.K_SPACE:
                     pause = not pause
+
+                # Screenshot of just the screen
+                elif event.key == pygame.K_F2:
+                    pygame.image.save(screen, "Images\Screenshots\Screenshot.png")
                 
+                # Save a copy of the entire world image.
                 elif event.key == pygame.K_F3:
-                    pygame.image.save(game_world.world_surface, "FullScreenshot.png")
+                    pygame.image.save(game_world.world_surface, "Images\Screenshots\FullScreenshot.png")
 
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 3:
