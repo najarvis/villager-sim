@@ -5,6 +5,8 @@ import TileFuncs
 import pygame
 from pygame.locals import *
 
+# TODO: Clean and add doctrings
+
 
 class GameEntity(object):
     def __init__(self, world, name, image_string):
@@ -24,6 +26,7 @@ class GameEntity(object):
         self.destination = Vector2(0, 0)
         self.speed = 0.
         self.base_speed = self.speed
+
         self.food = 70
         self.water = 70
         self.energy = 70
@@ -38,7 +41,7 @@ class GameEntity(object):
     def render(self, surface):
         x, y = self.world_location
         w, h = self.image.get_size()
-        pos = (x-w/2, y-h/2)
+        pos = (x - (w / 2), y - (h / 2))
         surface.blit(self.image, pos)
 
     def check_speed(self):
@@ -50,6 +53,7 @@ class GameEntity(object):
     def process(self, time_passed):
         self.brain.think()
         self.world_location = self.location + self.world.world_position
+
 
         self.check_speed()
 

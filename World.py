@@ -10,6 +10,10 @@ import Angler
 import Explorer
 import Arborist
 
+# TODO: Fog Of War - Make the world image covered in black, and the ai slowly reveals it.
+#     the tiles should have a 'hidden' attribute. Would be cool because the person watching
+#     the simulation wouldn't know what the final image looked like either.
+
 class World(object):
     """This class holds everything in the game. It also
     updates and renders it all each frame."""
@@ -198,6 +202,7 @@ class World(object):
         Returns:
             None"""
 
+
         start = {"Lumberjack": {"count": 2,
                                 "state": "Searching",
                                 "class": Lumberjack.Lumberjack},
@@ -225,6 +230,7 @@ class World(object):
                 new_ent.location = vector2.Vector2(self.w / 2, self.h / 2)
                 new_ent.brain.set_state(start[key]["state"])
                 self.add_entity(new_ent)
+
 
     def add_entity(self, entity):
         """Maps the input entity to the entity hash table (dictionary)
