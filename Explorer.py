@@ -20,6 +20,7 @@ class Explorer(GameEntity.GameEntity):
         GameEntity.GameEntity.__init__(self, world, "Explorer", "Entities/"+image_string)
 
         self.speed = 80.0 * (1.0 / 60.0)
+        self.base_speed = self.speed
         self.view_range = 8
 
         self.exploring_state = Exploring(self)

@@ -1,37 +1,40 @@
+import math
 import pygame
 from random import randint
 
-class point:
+class point(object):
 
     def __init__(self, pos, color=False):
-        #Basic point, this will be used for the "feature points"
-        #these will hold their position, as well as a seperate x and y
-        #variable for easy use. Also a distance variable will be assigned
-        #for when calculating the voronoi diagram
+        """Basic point, this will be used for the "feature points"
+        these will hold their position, as well as a separate x and y
+        variable for easy use. Also a distance variable will be assigned
+        for when calculating the voronoi diagram"""
 
         self.pos = pos
         self.x = pos[0]
         self.y = pos[1]
         self.distance = 0
         self.color = None
-        #if color: self.color = randint(0,255)
+        if color: self.color = randint(0, 255)
 
     def get_distance(self, p2):
-        #Basic distance formula. I don't square root everything
-        #in order to speed up the process (AKA Manhattan Distance)
+        """Basic distance formula. Doesn't square root everything
+        in order to speed up the process (AKA Manhattan Distance) """
+
         try:
             distance = float((p2.x - self.x) ** 2) + ((p2.y - self.y) ** 2)
-        except DivideByZeroError:
+        except ZeroDivisionError:
             distance = 0
         self.distance = distance
         return distance
 
-    def addColor(self):
+    def add_color(self):
         if randint(0, 1):
             self.color = randint(1, 10) * 10
         else:
             self.color = 0
-        
+
+
 class mapGen:
 
     def lerp(self, c1, c2, a):
@@ -134,7 +137,7 @@ class mapGen:
                 to_return[x][y] = current_point.brightness
 
         max_val -= min_val
-        print max_val, min_val
+        # print max_val, min_val
         for y in xrange(h):
             for x in xrange(w):
                 to_return[x][y] -= min_val
@@ -167,8 +170,7 @@ class mapGen:
                 toReturn[x][y] = clr
 
         return toReturn
-    
-    
+
     def lerp_two_images(self, pic1, pic2, a):
         w, h = len(pic1), len(pic1[0]) #pic1.get_size()
         surface = pygame.Surface((w, h))
@@ -238,6 +240,29 @@ class mapGen:
 
         return toReturn
 
+    def radial_drop(self, array, max_scalar=1.0, min_scalar=0.5, fast=True):
+        height, width = len(array), len(array[0])
+        center_y, center_x = height / 2, width / 2
+
+        if fast:
+            max_dis = center_x ** 2 + center_y ** 2
+        else:
+            max_dis = math.sqrt(center_x ** 2 + center_y ** 2)
+
+        to_return = array[:]
+        for y in xrange(height):
+            for x in xrange(width):
+                if fast:
+                    t = ((x - center_x) ** 2 + (y - center_y) ** 2) / float(max_dis)
+                else:
+                    t = math.sqrt((x - center_x) ** 2 + (y - center_y) ** 2) / max_dis
+
+                to_return[x][y] *= self.lerp(max_scalar, min_scalar, t)
+
+        return to_return
+
+
+
 
     def reallyCoolFull(self, total_size=(256,256), num_p=25):
         #Uses 4 (or as many as you make, but I have found this to look cool)
@@ -256,8 +281,5 @@ class mapGen:
         pic2 = self.whole_new_updated(size, rpd, ppr, c2=1)
         pic3 = self.whole_new_updated(size, rpd, ppr, c3=1)
         pic4 = self.whole_new_updated(size, rpd, ppr, c1=-1, c2=1)
-        #pic5 = self.whole_new_updated(size, 4, 2, c1=1)
-        #pic4 = self.whole_new_updated(size, 4, 2, c2=1)
 
-        #return self.combine_images(pic5, pic4)
         return self.combine_images(pic1, pic2, pic3, pic4)

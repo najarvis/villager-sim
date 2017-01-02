@@ -39,4 +39,5 @@ def random_dest(entity, recurse=False, r_num=0, r_max=6):
         print "r_num: %d" % r_num
         print "walk: ", walk
         print ""
-        if bad_spot: print "BAD SPOT, WTF"
+        if bad_spot:
+            print "BAD SPOT, WTF"

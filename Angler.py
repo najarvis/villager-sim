@@ -30,14 +30,15 @@ class Angler(GameEntity):
 
         self.max_speed = 80.0 * (1.0 / 60.0)
         self.speed = self.max_speed
-        self.view_range = 1
+        self.base_speed = self.speed
+        self.view_range = 2
         self.fish = 0
 
         self.worldSize = world.world_size
         self.TileSize = self.world.tile_size
 
         # animation variables
-        self.animation = Ani(9,10)
+        self.animation = Ani(9, 10)
         self.pic = pygame.image.load("Images/Entities/map.png")
         self.img_func = ImageFuncs(18, 17,self.pic)
         self.sprites = self.img_func.get_images(9,0,2)
