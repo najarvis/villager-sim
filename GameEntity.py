@@ -56,6 +56,7 @@ class GameEntity(object):
         self.brain.think()
         self.world_location = self.location + self.world.world_position
 
+
         self.check_speed()
 
         if self.speed > 0. and self.location != self.destination:
