@@ -1,3 +1,5 @@
+#! python2
+
 """This will basically be a rewrite of the original file,
    but this time with a focus on clean code and commenting."""
 
