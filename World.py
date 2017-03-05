@@ -78,7 +78,7 @@ class World(object):
         combined_map = PertTools.combine_arrays(vor_map, mid_map, 0.33, 0.66)
 
         pert_map = PertTools.scale_array(midpoint_generator.normalize(midpoint_generator.NewMidDis(int(math.log(map_width, 2)))), 255)
-        vor_map = map_generator.radial_drop(PertTools.pertubate(combined_map, pert_map), 1.5, 0.0, fast=False)
+        vor_map = map_generator.radial_drop(PertTools.pertubate(combined_map, pert_map), 1.5, 0.0)
         # vor_map = map_generator.radial_drop(mid_map, 1.5, 0.0)
 
 
