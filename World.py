@@ -71,18 +71,18 @@ class World(object):
         map_width, map_height = array_size
         map_generator = VoronoiMapGen.mapGen()
 
-        midpoint_generator = MidpointDisplacement.MidpointDisplacement()
-        mid_map = PertTools.scale_array(midpoint_generator.normalize(midpoint_generator.NewMidDis(int(math.log(map_width, 2)))), 255)
-        vor_map = map_generator.whole_new_updated(size=array_size, ppr=2, c1=-1, c2=1, c3=0)
+        # midpoint_generator = MidpointDisplacement.MidpointDisplacement()
+        # mid_map = PertTools.scale_array(midpoint_generator.normalize(midpoint_generator.NewMidDis(int(math.log(map_width, 2)))), 255)
+        # vor_map = map_generator.whole_new_updated(size=array_size, ppr=2, c1=-1, c2=1, c3=0)
 
-        combined_map = PertTools.combine_arrays(vor_map, mid_map, 0.33, 0.66)
+        # combined_map = PertTools.combine_arrays(vor_map, mid_map, 0.33, 0.66)
 
-        pert_map = PertTools.scale_array(midpoint_generator.normalize(midpoint_generator.NewMidDis(int(math.log(map_width, 2)))), 255)
-        vor_map = map_generator.radial_drop(PertTools.pertubate(combined_map, pert_map), 1.5, 0.0)
+        # pert_map = PertTools.scale_array(midpoint_generator.normalize(midpoint_generator.NewMidDis(int(math.log(map_width, 2)))), 255)
+        # vor_map = map_generator.radial_drop(PertTools.pertubate(combined_map, pert_map), 1.5, 0.0)
         # vor_map = map_generator.radial_drop(mid_map, 1.5, 0.0)
 
 
-        # vor_map = map_generator.radial_drop(map_generator.negative(map_generator.reallyCoolFull(array_size, num_p=23)), max_scalar=1.5, min_scalar=0.0)
+        vor_map = map_generator.radial_drop(map_generator.negative(map_generator.reallyCoolFull(array_size, num_p=23)), max_scalar=1.5, min_scalar=0.0)
 
 
         # All grass map for testing
@@ -198,15 +198,15 @@ class World(object):
         Returns:
             None"""
 
-        start = {"Lumberjack": {"count": 0,
+        start = {"Lumberjack": {"count": 2,
                                 "state": "Searching",
                                 "class": Lumberjack.Lumberjack},
 
-                 "Angler": {"count": 5,
+                 "Angler": {"count": 1,
                             "state": "Searching",
                             "class": Angler.Angler},
 
-                 "Arborist": {"count": 0,
+                 "Arborist": {"count": 1,
                               "state": "Planting",
                               "class": Arborist.Arborist},
 
@@ -214,7 +214,7 @@ class World(object):
                             "state": "Tilling",
                             "class": Farmer.Farmer},
 
-                 "Explorer": {"count": 0,
+                 "Explorer": {"count": 1,
                               "state": "Exploring",
                               "class": Explorer.Explorer}
                  }

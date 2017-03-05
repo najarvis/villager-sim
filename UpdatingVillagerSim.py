@@ -1,3 +1,5 @@
+#!python2
+
 """This will basically be a rewrite of the original file,
    but this time with a focus on clean code and commenting."""
 
@@ -97,4 +99,4 @@ if __name__ == "__main__":
     elif len(sys.argv) >= 3:
         run(bool(int(sys.argv[1])), int(sys.argv[2]))
     else:
-        run(False)
+        run(True, 128)
