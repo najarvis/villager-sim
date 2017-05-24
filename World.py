@@ -10,10 +10,6 @@ import Angler
 import Explorer
 import Arborist
 
-# TODO: Fog Of War - Make the world image covered in black, and the ai slowly reveals it.
-#     the tiles should have a 'hidden' attribute. Would be cool because the person watching
-#     the simulation wouldn't know what the final image looked like either.
-
 class World(object):
     """This class holds everything in the game. It also
     updates and renders it all each frame."""
@@ -77,9 +73,9 @@ class World(object):
 
         # midpoint_generator = MidpointDisplacement.MidpointDisplacement()
         # mid_map = PertTools.scale_array(midpoint_generator.normalize(midpoint_generator.NewMidDis(int(math.log(map_width, 2)))), 255)
-        #vor_map = map_generator.whole_new_updated(size=array_size, ppr=2, c1=-1, c2=1, c3=0)
+        # vor_map = map_generator.whole_new_updated(size=array_size, ppr=2, c1=-1, c2=1, c3=0)
 
-        #combined_map = PertTools.combine_arrays(vor_map, mid_map, 0.33, 0.66)
+        # combined_map = PertTools.combine_arrays(vor_map, mid_map, 0.33, 0.66)
 
         # pert_map = PertTools.scale_array(midpoint_generator.normalize(midpoint_generator.NewMidDis(int(math.log(map_width, 2)))), 255)
         # vor_map = map_generator.radial_drop(PertTools.pertubate(combined_map, pert_map), 1.5, 0.0)
@@ -202,12 +198,11 @@ class World(object):
         Returns:
             None"""
 
-
         start = {"Lumberjack": {"count": 2,
                                 "state": "Searching",
                                 "class": Lumberjack.Lumberjack},
 
-                 "Angler": {"count": 2,
+                 "Angler": {"count": 1,
                             "state": "Searching",
                             "class": Angler.Angler},
 
@@ -230,7 +225,6 @@ class World(object):
                 new_ent.location = vector2.Vector2(self.w / 2, self.h / 2)
                 new_ent.brain.set_state(start[key]["state"])
                 self.add_entity(new_ent)
-
 
     def add_entity(self, entity):
         """Maps the input entity to the entity hash table (dictionary)

@@ -21,12 +21,16 @@ class GameEntity(object):
             self.image.set_colorkey((255, 0, 255))
         except AttributeError:
             pass
+        
         self.location = Vector2(0, 0)
         self.world_location = Vector2(0, 0)
         self.destination = Vector2(0, 0)
+        
         self.speed = 0.
-        self.base_speed = self.speed
 
+        self.land_based = True
+        self.base_speed = self.speed
+        
         self.food = 70
         self.water = 70
         self.energy = 70

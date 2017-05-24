@@ -1,7 +1,9 @@
+import functools
 import math
 import pygame
 from random import randint
 
+@functools.total_ordering
 class point(object):
 
     def __init__(self, pos, color=False):
@@ -16,6 +18,7 @@ class point(object):
         self.distance = 0
         self.color = None
         if color: self.color = randint(0, 255)
+        self.current_point = None
 
     def get_distance(self, p2):
         """Basic distance formula. Doesn't square root everything
@@ -24,6 +27,8 @@ class point(object):
         try:
             distance = float((p2.x - self.x) ** 2) + ((p2.y - self.y) ** 2)
         except ZeroDivisionError:
+            distance = 0
+        except AttributeError:
             distance = 0
         self.distance = distance
         return distance
@@ -34,6 +39,12 @@ class point(object):
         else:
             self.color = 0
 
+    def __eq__(self, other):
+        return self.x == other.x and self.y == other.y
+
+    def __lt__(self, other):
+        return self.get_distance(self.current_point) < other.get_distance(self.current_point)
+
 
 class mapGen:
 
@@ -41,9 +52,11 @@ class mapGen:
         return c1 + (c2 - c1) * a
 
     def whole_new(self, num_R, size=(256, 256), c1=0, c2=0, c3=0):
-        #Creates 1 image of the voronoi diagram. I only listed the first 3
-        #coefficients because that's all I will really need, but feel free
-        #to add more
+        """DEPRECATED
+        Creates 1 image of the voronoi diagram. I only listed the first 3
+        coefficients because that's all I will really need, but feel free
+        to add more"""
+
         w, h = size  #Very easy to use w and h instead of size[0] and size[1]
 
         toReturn = [[0 for _ in xrange(size[0])] for _ in xrange(size[1])]
@@ -54,9 +67,13 @@ class mapGen:
         for y in xrange(h):     #Do row-by-row instead of
             for x in xrange(w): #collumn-by-collumn
                 currentPoint = point((x, y))
-                new_pointlist = sorted(point_list, key=lambda point: point.get_distance(currentPoint))  #sort the points in a new list by their distance from the current point
+                for p in point_list:
+                    p.current_point = currentPoint
 
-                currentPoint.brightness = int(c1*new_pointlist[0].distance+c2*new_pointlist[1].distance+c3*new_pointlist[2].distance)/(num_R*(size[0]/((512.0/size[0])*256)))
+                point_list.sort() # sorted(point_list, key=lambda point: point.get_distance(currentPoint))  #sort the points in a new list by their distance from the current point
+                #(new_pointlist)
+
+                currentPoint.brightness = int(c1*point_list[0].distance+c2*point_list[1].distance+c3*point_list[2].distance)/(num_R*(size[0]/((512.0/size[0])*256)))
                 #this uses the coefficients and the new list to find the brightness of the wanted pixel
                 #the math at the end is something I came to after about a half hour of fiddling around
                 #with values. This will keep the value at a constant and good level, and not flatten anything.
@@ -116,13 +133,16 @@ class mapGen:
         for y in xrange(h):
             for x in xrange(w):
                 current_point = point((x, y))
+                for p in interest_points:
+                    p.current_point = interest_points
 
                 #sort the points in a new list by their distance from the current point
-                new_pointlist = sorted(interest_points, key=lambda point: point.get_distance(current_point)) 
+                #new_pointlist = sorted(interest_points, key=lambda point: point.get_distance(current_point))
+                interest_points.sort()
 
-                current_point.brightness = c1 * new_pointlist[0].distance + \
-                                           c2 * new_pointlist[1].distance + \
-                                           c3 * new_pointlist[2].distance
+                current_point.brightness = c1 * interest_points[0].distance + \
+                                           c2 * interest_points[1].distance + \
+                                           c3 * interest_points[2].distance
 
                 if y == x == 0:
                     max_val = current_point.brightness
@@ -147,23 +167,28 @@ class mapGen:
         return to_return
 
     def flat(self, num_R, size=(256, 256)):
-        #Creates 1 image of the voronoi diagram. I only listed the first 3
-        #coefficients because that's all I will really need, but feel free
-        #to add more
-        w,h = size  #Very easy to use w and h instead of size[0] and size[1]
+        """
+        Creates 1 image of the voronoi diagram. I only listed the first 3
+        coefficients because that's all I will really need, but feel free
+        to add more"""
+
+        w, h = size  # Very easy to use w and h instead of size[0] and size[1]
         
         toReturn = [[0 for i in xrange(size[0])] for j in xrange(size[1])]
 
-        point_list = [point((randint(0,w), randint(0,h)),True) for i in range(num_R)]        #Creates the random "interest" points,
+        point_list = [point((randint(0, w), randint(0, h)),True) for i in range(num_R)]        #Creates the random "interest" points,
         for POINT in point_list:
             POINT.addColor()
 
         for y in xrange(h):     #Do row-by-row instead of
             for x in xrange(w): #collumn-by-collumn
                 currentPoint = point((x, y))
-                new_pointlist = sorted(point_list, key=lambda point: point.get_distance(currentPoint))  #sort the points in a new list by their distance from the current point
+                for p in point_list:
+                    p.current_point = currentPoint
 
-                currentPoint.brightness = new_pointlist[0].color
+                point_list.sort() # = sorted(point_list, key=lambda point: point.get_distance(currentPoint))  #sort the points in a new list by their distance from the current point
+
+                currentPoint.brightness = point_list[0].color
                 clr = abs(currentPoint.brightness)
                 clr = min(255, clr)
 
