@@ -36,7 +36,7 @@ def get_tile_array(world, start_pos, dimensions):
                 try:
                     array[a][i] = world.tile_array[int((start_tile.y + a) - 1)][int((start_tile.x + i) - 1)]
                 except IndexError:
-                    print a, i, start_tile
+                    #print a, i, start_tile
                     raise IndexError
     return array
 
@@ -50,7 +50,7 @@ def get_vnn_array(world, location, r):
     """
     range: 3
     num rows: 5 (number of rows is equal to (2 * r) - 1
-    0     *      1     left column is row_number  
+    0     *      1     left column is row_number
     1   * * *    3     right column is num_in_row
     2 * * * * *  5
     3   * * *    3     middle is illustration of what is looks like
@@ -68,10 +68,10 @@ def get_vnn_array(world, location, r):
             """
             the y_offset goes from -(r - 1) to +(r - 1) (not affected by the inner loop)
 
-            the x_offset goes from -math.floor(num_in_row / 2.0) to +math.floor(num_in_row / 2.0) 
+            the x_offset goes from -math.floor(num_in_row / 2.0) to +math.floor(num_in_row / 2.0)
 
-            0     0     1 |                  (0, -2)                  x, y offset pairs of a range 3 vnn array        
-            1   0 1 2   3 |         (-1, -1) (0, -1) (1, -1)         
+            0     0     1 |                  (0, -2)                  x, y offset pairs of a range 3 vnn array
+            1   0 1 2   3 |         (-1, -1) (0, -1) (1, -1)
             2 0 1 2 3 4 5 | (-2, 0) (-1, 0 ) (0, 0 ) (1, 0 ) (2, 0)   left column is row_number
             3   0 1 2   3 |         (-1, 1 ) (0, 1 ) (1, 1 )          right column is num_in_row
             4     0     1 |                  (0, 2 )                  middle is cell number

@@ -21,6 +21,7 @@ class Lumberjack(GameEntity):
         GameEntity.__init__(self, world, "Lumberjack", "Entities/"+image_string)
 
         self.speed = 100.0 * (1.0 / 60.0)
+        self.base_speed = self.speed
         self.view_range = 6
 
         # Creating the states

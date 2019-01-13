@@ -29,12 +29,12 @@ class ImageFuncs():
         :return: None
         """
         self.w_img, self.h_img = pic.get_size()
-        cells = [[0 for i in xrange(self.w_img/self.w_cell)] for j in xrange(self.h_img/self.h_cell)]
-        for i in xrange(self.w_img/self.w_cell):
-            for a in xrange(self.h_img/self.h_cell):
+        cells = [[0 for i in range(self.w_img // self.w_cell)] for j in range(self.h_img // self.h_cell)]
+        for i in range(self.w_img // self.w_cell):
+            for a in range(self.h_img // self.h_cell):
                 cells[i][a] = pic.subsurface((i*self.w_cell, a*self.h_cell, self.w_cell, self.h_cell))
         self.cells = cells
-    
+
     def get_cell(self, row, column):
         """
         :param row: num of rows in cell
@@ -42,7 +42,7 @@ class ImageFuncs():
         :return: The list of images
         """
         return self.cells[row][column]
-    
+
     def get_image(self, x, y):
         """
         :param x: x location
@@ -66,7 +66,7 @@ class ImageFuncs():
             for g in range(num_w):
                 quick_image.blit(self.get_cell(x+i, y+g), (i*self.w_cell, g*self.h_cell))
         return quick_image
-    
+
     def get_images(self, num_images, x, y):
         """
         :param num_images: number of images

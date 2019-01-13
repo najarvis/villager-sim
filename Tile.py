@@ -12,6 +12,8 @@ class Tile(object):
         self.walkable = False
         self.fishable = False
         self.plantable = False
+        self.tillable = False
+        self.crop_plantable = False
         self.buildable = False
         self.buildable_w = False
         self.darkness = 0
@@ -29,6 +31,7 @@ class GrassTile(Tile):
         self.walkable = True
         self.buildable = True
         self.plantable = True
+        self.tillable = True
 
 class WaterTile(Tile):
     def __init__(self, world, tile_name):
@@ -58,6 +61,7 @@ class DirtTile(Tile):
         Tile.__init__(self, world, tile_name)
         self.walkable = True
         self.buildable = True
+        self.tillable = True
 
 class BeachTile(Tile):
     def __init__(self, world, tile_name):
@@ -85,3 +89,9 @@ class BuildingTile(Tile):
     def __init__(self, world, tile_name):
         Tile.__init__(self, world, tile_name)
         self.walkable = True
+
+class SoilTile(Tile):
+    def __init__(self, world, tile_name):
+        Tile.__init__(self, world, tile_name)
+        self.walkable = True
+        self.crop_plantable = True

@@ -1,59 +1,79 @@
+import functools
+import math
 import pygame
 from random import randint
 
-class point:
+@functools.total_ordering
+class point(object):
 
     def __init__(self, pos, color=False):
-        #Basic point, this will be used for the "feature points"
-        #these will hold their position, as well as a seperate x and y
-        #variable for easy use. Also a distance variable will be assigned
-        #for when calculating the voronoi diagram
+        """Basic point, this will be used for the "feature points"
+        these will hold their position, as well as a separate x and y
+        variable for easy use. Also a distance variable will be assigned
+        for when calculating the voronoi diagram"""
 
         self.pos = pos
         self.x = pos[0]
         self.y = pos[1]
         self.distance = 0
         self.color = None
-        #if color: self.color = randint(0,255)
+        if color: self.color = randint(0, 255)
+        self.current_point = None
 
     def get_distance(self, p2):
-        #Basic distance formula. I don't square root everything
-        #in order to speed up the process (AKA Manhattan Distance)
+        """Basic distance formula. Doesn't square root everything
+        in order to speed up the process (AKA Manhattan Distance) """
+
         try:
             distance = float((p2.x - self.x) ** 2) + ((p2.y - self.y) ** 2)
-        except DivideByZeroError:
+        except ZeroDivisionError:
+            distance = 0
+        except AttributeError:
             distance = 0
         self.distance = distance
         return distance
 
-    def addColor(self):
+    def add_color(self):
         if randint(0, 1):
             self.color = randint(1, 10) * 10
         else:
             self.color = 0
-        
+
+    def __eq__(self, other):
+        return self.x == other.x and self.y == other.y
+
+    def __lt__(self, other):
+        return self.get_distance(self.current_point) < other.get_distance(self.current_point)
+
+
 class mapGen:
 
     def lerp(self, c1, c2, a):
         return c1 + (c2 - c1) * a
 
     def whole_new(self, num_R, size=(256, 256), c1=0, c2=0, c3=0):
-        #Creates 1 image of the voronoi diagram. I only listed the first 3
-        #coefficients because that's all I will really need, but feel free
-        #to add more
+        """DEPRECATED
+        Creates 1 image of the voronoi diagram. I only listed the first 3
+        coefficients because that's all I will really need, but feel free
+        to add more"""
+
         w, h = size  #Very easy to use w and h instead of size[0] and size[1]
 
-        toReturn = [[0 for _ in xrange(size[0])] for _ in xrange(size[1])]
+        toReturn = [[0 for _ in range(size[0])] for _ in range(size[1])]
 
         point_list = [point((randint(0, w), randint(0, h))) for i in range(num_R)]
         #Creates the random "interest" points,
 
-        for y in xrange(h):     #Do row-by-row instead of
-            for x in xrange(w): #collumn-by-collumn
+        for y in range(h):     #Do row-by-row instead of
+            for x in range(w): #collumn-by-collumn
                 currentPoint = point((x, y))
-                new_pointlist = sorted(point_list, key=lambda point: point.get_distance(currentPoint))  #sort the points in a new list by their distance from the current point
+                for p in point_list:
+                    p.current_point = currentPoint
 
-                currentPoint.brightness = int(c1*new_pointlist[0].distance+c2*new_pointlist[1].distance+c3*new_pointlist[2].distance)/(num_R*(size[0]/((512.0/size[0])*256)))
+                point_list.sort() # sorted(point_list, key=lambda point: point.get_distance(currentPoint))  #sort the points in a new list by their distance from the current point
+                #(new_pointlist)
+
+                currentPoint.brightness = int(c1*point_list[0].distance+c2*point_list[1].distance+c3*point_list[2].distance)/(num_R*(size[0]/((512.0/size[0])*256)))
                 #this uses the coefficients and the new list to find the brightness of the wanted pixel
                 #the math at the end is something I came to after about a half hour of fiddling around
                 #with values. This will keep the value at a constant and good level, and not flatten anything.
@@ -75,11 +95,11 @@ class mapGen:
         with coefficients c1, c2, and c3 to customize the array.
 
         Arguments:
-            size: 
-                The size of the return array. This should probably just be an 
+            size:
+                The size of the return array. This should probably just be an
                 integer to keep the array square in the future.
             rpd:
-                This is the amount of regions on each side of the diagram. 
+                This is the amount of regions on each side of the diagram.
                 A value of 4 would result in 16 regions, 4 on each side.
             ppr:
                 The amount of interest points in a region. Randomly distributed
@@ -92,17 +112,17 @@ class mapGen:
         Returns a 2-Dimensional array with size equal to the argument size."""
 
         w, h = size
-        to_return = [[0 for i in xrange(w)] for j in xrange(h)]
+        to_return = [[0 for i in range(w)] for j in range(h)]
         num_regions = rpd * rpd
         region_size = size[0] / rpd
         num_points = num_regions * ppr
 
         interest_points = []
 
-        for region_y in xrange(rpd):
-            for region_x in xrange(rpd):
-                
-                for p in xrange(ppr):
+        for region_y in range(rpd):
+            for region_x in range(rpd):
+
+                for p in range(ppr):
                     rx = randint(region_x * region_size, (region_x + 1) * region_size)
                     ry = randint(region_y * region_size, (region_y + 1) * region_size)
                     interest_points.append(point((rx, ry)))
@@ -110,16 +130,19 @@ class mapGen:
         max_val = 0
         min_val = 0
 
-        for y in xrange(h):
-            for x in xrange(w):
+        for y in range(h):
+            for x in range(w):
                 current_point = point((x, y))
+                for p in interest_points:
+                    p.current_point = interest_points
 
                 #sort the points in a new list by their distance from the current point
-                new_pointlist = sorted(interest_points, key=lambda point: point.get_distance(current_point)) 
+                #new_pointlist = sorted(interest_points, key=lambda point: point.get_distance(current_point))
+                interest_points.sort()
 
-                current_point.brightness = c1 * new_pointlist[0].distance + \
-                                           c2 * new_pointlist[1].distance + \
-                                           c3 * new_pointlist[2].distance
+                current_point.brightness = c1 * interest_points[0].distance + \
+                                           c2 * interest_points[1].distance + \
+                                           c3 * interest_points[2].distance
 
                 if y == x == 0:
                     max_val = current_point.brightness
@@ -134,47 +157,51 @@ class mapGen:
                 to_return[x][y] = current_point.brightness
 
         max_val -= min_val
-        print max_val, min_val
-        for y in xrange(h):
-            for x in xrange(w):
+        # print max_val, min_val
+        for y in range(h):
+            for x in range(w):
                 to_return[x][y] -= min_val
-                
+
                 to_return[x][y] = int((to_return[x][y] / max_val) * 255)
 
         return to_return
 
     def flat(self, num_R, size=(256, 256)):
-        #Creates 1 image of the voronoi diagram. I only listed the first 3
-        #coefficients because that's all I will really need, but feel free
-        #to add more
-        w,h = size  #Very easy to use w and h instead of size[0] and size[1]
-        
-        toReturn = [[0 for i in xrange(size[0])] for j in xrange(size[1])]
+        """
+        Creates 1 image of the voronoi diagram. I only listed the first 3
+        coefficients because that's all I will really need, but feel free
+        to add more"""
 
-        point_list = [point((randint(0,w), randint(0,h)),True) for i in range(num_R)]        #Creates the random "interest" points,
+        w, h = size  # Very easy to use w and h instead of size[0] and size[1]
+
+        toReturn = [[0 for i in range(size[0])] for j in range(size[1])]
+
+        point_list = [point((randint(0, w), randint(0, h)),True) for i in range(num_R)]        #Creates the random "interest" points,
         for POINT in point_list:
             POINT.addColor()
 
-        for y in xrange(h):     #Do row-by-row instead of
-            for x in xrange(w): #collumn-by-collumn
+        for y in range(h):     #Do row-by-row instead of
+            for x in range(w): #collumn-by-collumn
                 currentPoint = point((x, y))
-                new_pointlist = sorted(point_list, key=lambda point: point.get_distance(currentPoint))  #sort the points in a new list by their distance from the current point
+                for p in point_list:
+                    p.current_point = currentPoint
 
-                currentPoint.brightness = new_pointlist[0].color
+                point_list.sort() # = sorted(point_list, key=lambda point: point.get_distance(currentPoint))  #sort the points in a new list by their distance from the current point
+
+                currentPoint.brightness = point_list[0].color
                 clr = abs(currentPoint.brightness)
                 clr = min(255, clr)
 
                 toReturn[x][y] = clr
 
         return toReturn
-    
-    
+
     def lerp_two_images(self, pic1, pic2, a):
         w, h = len(pic1), len(pic1[0]) #pic1.get_size()
         surface = pygame.Surface((w, h))
 
-        for y in xrange(h):
-            for x in xrange(w):
+        for y in range(h):
+            for x in range(w):
                 clr1 = pic1.get_at((x, y))
                 clr2 = pic2.get_at((x, y))
                 clrR = (clr1[0]*(1-a)+clr2[0]*a)
@@ -182,8 +209,8 @@ class mapGen:
                 clrB = (clr1[2]*(1-a)+clr2[2]*a)
                 try:
                     surface.set_at((x, y), (clrR, clrG, clrB))
-                except TypeError, e:
-                    print clr
+                except TypeError as e:
+                    print(clr)
                     raise e
 
         return surface
@@ -195,21 +222,21 @@ class mapGen:
 
         num_pics = len(pics)
         w, h= len(pics[0]), len(pics[0][0])#Again, this is very nice for keeping things quick
-        
-        total_map = [[0 for i in xrange(h)] for i in xrange(w)] #Create a 2D array to hold all the values
+
+        total_map = [[0 for i in range(h)] for i in range(w)] #Create a 2D array to hold all the values
         for PIC in pics:    #Loops through each of the given pictures
-            for y in xrange(h):         #Row-by-Row
-                for x in xrange(w):
+            for y in range(h):         #Row-by-Row
+                for x in range(w):
                     try:
                         total_map[x][y] += PIC[x][y]   #Adds the current value at the map to the corresponding cell on the array
-                    except IndexError:
-                        print x,y
-                        print len(total_map), len(total_map[0])
-                        raise IndexError
+                    except IndexError as err:
+                        print(x, y)
+                        print(len(total_map), len(total_map[0]))
+                        raise err
 
         to_return = [[0 for i in range(h)] for j in range(w)]
-        for y in xrange(h):     #Loop through again, row-by-row
-            for x in xrange(w):
+        for y in range(h):     #Loop through again, row-by-row
+            for x in range(w):
                 total_map[x][y]/=num_pics   #average out each cell
                 clr = total_map[x][y]       #use clr so we don't have to use 'total_map[x][y]' 3 times
                 to_return[x][y] = clr
@@ -221,9 +248,9 @@ class mapGen:
         #NOTE: array must have equal size dimensions
 
         w = h = len(array)
-        toReturn = [[0 for x in xrange(w)] for y in xrange(h)]
-        for y in xrange(h):     #Row-by-Row
-            for x in xrange(w):
+        toReturn = [[0 for x in range(w)] for y in range(h)]
+        for y in range(h):     #Row-by-Row
+            for x in range(w):
                 if lower <= array[x][y] <= upper: #Checks to see if the value is in the threshold
                     toReturn[x][y] = 255    #Sets the pixel at that position to white if it is
 
@@ -231,12 +258,35 @@ class mapGen:
 
     def negative(self, ARRAY):
         w = h = len(ARRAY)
-        toReturn = [[0 for x in xrange(w)]for y in xrange(h)]
-        for y in xrange(h):
-            for x in xrange(w):
+        toReturn = [[0 for x in range(w)]for y in range(h)]
+        for y in range(h):
+            for x in range(w):
                 toReturn[x][y] = 255-ARRAY[x][y]
 
         return toReturn
+
+    def radial_drop(self, array, max_scalar=1.0, min_scalar=0.5, fast=True):
+        height, width = len(array), len(array[0])
+        center_y, center_x = height / 2, width / 2
+
+        if fast:
+            max_dis = center_x ** 2 + center_y ** 2
+        else:
+            max_dis = math.sqrt(center_x ** 2 + center_y ** 2)
+
+        to_return = array[:]
+        for y in range(height):
+            for x in range(width):
+                if fast:
+                    t = ((x - center_x) ** 2 + (y - center_y) ** 2) / float(max_dis)
+                else:
+                    t = math.sqrt((x - center_x) ** 2 + (y - center_y) ** 2) / max_dis
+
+                to_return[x][y] *= self.lerp(max_scalar, min_scalar, t)
+
+        return to_return
+
+
 
 
     def reallyCoolFull(self, total_size=(256,256), num_p=25):
@@ -256,8 +306,5 @@ class mapGen:
         pic2 = self.whole_new_updated(size, rpd, ppr, c2=1)
         pic3 = self.whole_new_updated(size, rpd, ppr, c3=1)
         pic4 = self.whole_new_updated(size, rpd, ppr, c1=-1, c2=1)
-        #pic5 = self.whole_new_updated(size, 4, 2, c1=1)
-        #pic4 = self.whole_new_updated(size, 4, 2, c2=1)
 
-        #return self.combine_images(pic5, pic4)
         return self.combine_images(pic1, pic2, pic3, pic4)

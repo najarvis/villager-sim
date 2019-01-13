@@ -1,7 +1,7 @@
 from World import *
 from aitools.StateMachine import *
 from gametools.vector2 import *
-
+import TileFuncs
 import pygame
 from pygame.locals import *
 
@@ -21,14 +21,16 @@ class GameEntity(object):
             self.image.set_colorkey((255, 0, 255))
         except AttributeError:
             pass
+        
         self.location = Vector2(0, 0)
         self.world_location = Vector2(0, 0)
         self.destination = Vector2(0, 0)
-        self.speed = 0.0
+        
+        self.speed = 0.
 
         self.land_based = True
+        self.base_speed = self.speed
         
-        # TODO: Implement these
         self.food = 70
         self.water = 70
         self.energy = 70
@@ -46,11 +48,20 @@ class GameEntity(object):
         pos = (x - (w / 2), y - (h / 2))
         surface.blit(self.image, pos)
 
+    def check_speed(self):
+        if TileFuncs.get_tile(self.world, self.location).name in ["AndrewSmoothStone", "MinecraftSnow"]:
+            self.speed = 0.5 * self.base_speed
+        else:
+            self.speed = self.base_speed
+
     def process(self, time_passed):
         self.brain.think()
         self.world_location = self.location + self.world.world_position
 
-        if self.speed > 0 and self.location != self.destination:
+
+        self.check_speed()
+
+        if self.speed > 0. and self.location != self.destination:
             vec_to_destination = self.destination - self.location
             distance_to_destination = vec_to_destination.get_length()
             heading = vec_to_destination.get_normalized()
