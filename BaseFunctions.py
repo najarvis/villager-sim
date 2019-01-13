@@ -13,8 +13,8 @@ def random_dest(entity, recurse=False, r_num=0, r_max=6):
         entity.orientation += random.randint(-30, 30)
     angle = math.radians(entity.orientation)
     distance = random.randint(50, 100)
-    possible_dest = Vector2(entity.location.x + math.cos(angle) * distance, entity.location.y + math.sin(angle) * distance)        
-    
+    possible_dest = Vector2(entity.location.x + math.cos(angle) * distance, entity.location.y + math.sin(angle) * distance)
+
     # If the destination will go off the map, it is NOT a valid move under any circumstances.
     bad_spot = False
     if (0 > possible_dest.x > entity.world.world_size[0] or \
@@ -29,14 +29,14 @@ def random_dest(entity, recurse=False, r_num=0, r_max=6):
     if ((not walk and not depth_max) or bad_spot):
         random_dest(entity, True, r_num+1, r_max)
         return
-    
+
     else:
         entity.destination = possible_dest
 
     if DEBUG:
-        print "Current Tile: " + TileFuncs.get_tile(entity.world, entity.location).__class__.__name__
-        print "Destination Tile: " + TileFuncs.get_tile(entity.world, entity.destination).__class__.__name__
-        print "r_num: %d" % r_num
-        print "walk: ", walk
-        print ""
-        if bad_spot: print "BAD SPOT, WTF"
+        print("Current Tile: " + TileFuncs.get_tile(entity.world, entity.location).__class__.__name__)
+        print("Destination Tile: " + TileFuncs.get_tile(entity.world, entity.destination).__class__.__name__)
+        print("r_num: %d" % r_num)
+        print("walk: ", walk)
+        print("")
+        if bad_spot: print("BAD SPOT, WTF")

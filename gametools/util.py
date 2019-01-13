@@ -49,9 +49,10 @@ def next_power_of_2(n):
     return int(2 ** math.ceil(math.log(n, 2)))
 
 if __name__ == "__main__":
-    print list(xrange2d(xrange(3), xrange(3)))
-    print range2d(xrange(3), xrange(3))
-    print is_power_of_2(7)
-    print is_power_of_2(8)
-    print is_power_of_2(9)
-    print next_power_of_2(7)
+    pass
+    #print list(xrange2d(xrange(3), xrange(3)))
+    #print range2d(xrange(3), xrange(3))
+    #print is_power_of_2(7)
+    #print is_power_of_2(8)
+    #print is_power_of_2(9)
+    #print next_power_of_2(7)

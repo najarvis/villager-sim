@@ -55,8 +55,8 @@ def run(fullscreen):
                 if event.key == pygame.K_ESCAPE:
                     done = True
 
-		if event.key == pygame.K_SPACE:
-		    pause = not pause
+                if event.key == pygame.K_SPACE:
+                    pause = not pause
 
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 3:
@@ -79,24 +79,24 @@ def run(fullscreen):
                 y_temp_1 = -game_world.clipper.b * (pos.y - game_world.clipper.minimap_rect.y)
                 y_temp_2 = game_world.clipper.rect_view_h * game_world.clipper.b
                 game_world.world_position.y = y_temp_1 + (y_temp_2 / 2)
-	
-	    # Process everything in the game world
 
-	if not pause:
+        # Process everything in the game world
+
+        if not pause:
             game_world.process(time_passed_seconds)
 
-	    tile_list = TileFuncs.get_vnn_array(game_world, game_world.entities[0].location, 2)
-	    # DebugTools.print_surrounding_tiles(game_world)
-	    # DebugTools.print_surrounding_tiles(game_world, "Location")
-            
+            tile_list = TileFuncs.get_vnn_array(game_world, game_world.entities[0].location, 2)
+            # DebugTools.print_surrounding_tiles(game_world)
+            # DebugTools.print_surrounding_tiles(game_world, "Location")
+
             # print TileFuncs.get_tile(game_world, tile_list[0]), TileFuncs.get_tile(game_world, tile_list[4])
 
-        # Clear the screen, then draw the world onto it
-        screen.fill((0, 0, 0))
-        game_world.render_all(screen, time_passed_seconds, pos)
-	
-	# Update the screen
-        pygame.display.update()
+            # Clear the screen, then draw the world onto it
+            screen.fill((0, 0, 0))
+            game_world.render_all(screen, time_passed_seconds, pos)
+
+            # Update the screen
+            pygame.display.update()
 
     pygame.quit()
 

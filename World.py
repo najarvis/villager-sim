@@ -73,12 +73,12 @@ class World(object):
         vor_map = map_generator.negative(map_generator.reallyCoolFull(array_size,
                                                                                 num_p=23))
         self.minimap_img = pygame.Surface((map_width, map_height))
-        self.tile_array = [[0 for tile_x in xrange(map_width)] for tile_y in xrange(map_height)]
+        self.tile_array = [[0 for tile_x in range(map_width)] for tile_y in range(map_height)]
         self.world_surface = pygame.Surface(self.world_size, pygame.HWSURFACE)
-        
-        for tile_x in xrange(map_width):
 
-            for tile_y in xrange(map_height):
+        for tile_x in range(map_width):
+
+            for tile_y in range(map_height):
 
                 color = vor_map[tile_x][tile_y]
 
@@ -120,13 +120,13 @@ class World(object):
                 if 220 > color >= 190:
                     alph = 330 - color
                 new_tile.darkness = alph
-                
+
                 subtle_shadow = pygame.Surface((self.tile_size, self.tile_size))
                 subtle_shadow.set_alpha(alph)
 
                 self.world_surface.blit(new_tile.img, new_tile.location)
                 self.world_surface.blit(subtle_shadow, new_tile.location)
-                
+
                 self.minimap_img.blit(
                         new_tile.img.subsurface(
                             (0, 0, 1, 1)), (tile_x, tile_y))
@@ -137,13 +137,13 @@ class World(object):
                             (0, 0, 1, 1)), (tile_x, tile_y))
 
                 self.tile_array[tile_y][tile_x] = new_tile
-        
+
         self.populate()
 
     def populate(self):
         """Populates the world with entities.
 
-        Currently just does a hard-coded a specific number of 
+        Currently just does a hard-coded a specific number of
         lumberjacks and farmers in the same position.
 
         Args:
@@ -159,25 +159,25 @@ class World(object):
         num_farmer = 2
         num_explorer = 1
 
-        for lumberjack_num in xrange(num_lumber):
+        for lumberjack_num in range(num_lumber):
             lumberjack = Lumberjack.Lumberjack(self, "Lumberjack")
             lumberjack.location = vector2.Vector2(self.w / 2, self.h / 2)
             lumberjack.brain.set_state("Searching")
             self.add_entity(lumberjack)
 
-        for angler_num in xrange(num_angler):
+        for angler_num in range(num_angler):
             angler = Angler.Angler(self, "UsainBolt") # In case you are wondering, there is no 'Angler.png' image. Don't shoot me.
             angler.location = vector2.Vector2(self.w / 2, self.h / 2)
             angler.brain.set_state("Searching")
             self.add_entity(angler)
 
-        for farmer_num in xrange(num_farmer):
+        for farmer_num in range(num_farmer):
             farmer = Farmer.Farmer(self, "Farmer")
             farmer.location = vector2.Vector2(self.w / 2, self.h / 2)
             farmer.brain.set_state("Planting")
             self.add_entity(farmer)
 
-        for explorer_num in xrange(num_explorer):
+        for explorer_num in range(num_explorer):
             explorer = Explorer.Explorer(self, "Explorer")
             explorer.location = vector2.Vector2(self.w / 2, self.h / 2)
             explorer.brain.set_state("Exploring")
@@ -203,8 +203,8 @@ class World(object):
         building.id = self.building_id
         self.building_id += 1
 
-        for tile_x in xrange(building.image.get_width()):
-            for tile_y in xrange(building.image.get_height()):
+        for tile_x in range(building.image.get_width()):
+            for tile_y in range(building.image.get_height()):
                 self.tile_array[building.location.y + tile_y][building.location.x + tile_x] = Tile.BuildingTile(self, "MinecraftGrass")
         self.world_surface.blit(building.image, building.location * self.tile_size)
 
@@ -233,7 +233,7 @@ class World(object):
 
         surface.blit(self.world_surface, self.world_position)
 
-        for entity in self.entities.itervalues():
+        for entity in self.entities.values():
             entity.render(surface)
             if entity.active_info == True:
                 self.render_info_bar(surface,entity)
@@ -260,7 +260,7 @@ class World(object):
         lst = [self.f_high,self.f_low,self.w_high,self.w_low,self.e_high,self.e_low]
         lst2 = [entity.food,entity.water,entity.energy]
         surface.blit(self.info_bar,(entity.world_location.x +10,entity.world_location.y - 20))
-        for i in xrange(3):
+        for i in range(3):
             t = lst2[i] / 100.
             r = self.lerp(lst[2*i][0],lst[2*i + 1][0],t)
             g = self.lerp(lst[2*i][1],lst[2*i + 1][1],t)
@@ -269,5 +269,3 @@ class World(object):
 
     def lerp(self,v1,v2,t):
         return (1-t)*v2 + t*v1
-
-
